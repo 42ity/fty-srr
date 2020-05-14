@@ -112,7 +112,9 @@ namespace srr
         
         // Remove it to do not add twice.
         features.erase(AUTOMATIONS);
-        
+        // TODO remove this when fty-asset will be refactored.
+        features.erase(VIRTUAL_ASSETS);
+
         // Remaining features
         ListFeatureResponse otherFeatures;
         for (const auto& feature : features)
