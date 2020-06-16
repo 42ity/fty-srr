@@ -22,6 +22,7 @@
 #ifndef FTY_SRR_H_H_INCLUDED
 #define FTY_SRR_H_H_INCLUDED
 
+// clang-format off
 //  Include the project library file
 #include "fty_srr_library.h"
 
@@ -43,7 +44,10 @@ constexpr auto EMC4J_MSG_QUEUE_NAME         = "ETN.Q.EMC4J.REQ";
 // Security wallet agent definition 
 constexpr auto SECU_WALLET_AGENT_NAME       = "security-wallet";
 constexpr auto SECU_WALLET_MSG_QUEUE_NAME   = "ETN.Q.IPMCORE.SECUWALLET";
-// Features definition  
+// Asset agent definition
+constexpr auto ASSET_AGENT_NAME             = "asset-agent-srr";
+constexpr auto ASSET_AGENT_MSG_QUEUE_NAME   = "FTY.Q.ASSET.SRR";
+// Features definition
 constexpr auto MONITORING_FEATURE_NAME      = "monitoring";
 constexpr auto NOTIFICATION_FEATURE_NAME    = "notification";
 constexpr auto AUTOMATION_SETTINGS          = "automation-settings";
@@ -54,6 +58,7 @@ constexpr auto NETWORK                      = "network";
 constexpr auto AUTOMATIONS                  = "automations";
 constexpr auto VIRTUAL_ASSETS               = "virtual-assets";
 constexpr auto SECURITY_WALLET              = "security-wallet";
+constexpr auto ASSET_AGENT                  = "asset-agent";
 // Common definition                    
 constexpr auto SRR_VERSION_KEY              = "version";
 constexpr auto ACTIVE_VERSION               = "1.0";

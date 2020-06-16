@@ -26,6 +26,8 @@
 @end
  */
 
+// clang-format off
+
 #include <fty_srr_dto.h>
 #include <fty_lib_certificate_library.h>
 
@@ -85,10 +87,13 @@ namespace srr
         m_featuresToAgent [VIRTUAL_ASSETS] = {EMC4J_AGENT_NAME, TRANSLATE_ME((std::string(SRR_PREFIX_TRANSLATE_KEY) + VIRTUAL_ASSETS).c_str())};
         // Feature -> Agent (security-wallet)
         m_featuresToAgent [SECURITY_WALLET] = {SECU_WALLET_AGENT_NAME, TRANSLATE_ME((std::string(SRR_PREFIX_TRANSLATE_KEY) + SECURITY_WALLET).c_str())};
+        // Feature -> Agent (asset-agent)
+        m_featuresToAgent [ASSET_AGENT] = {ASSET_AGENT_NAME, TRANSLATE_ME((std::string(SRR_PREFIX_TRANSLATE_KEY) + ASSET_AGENT).c_str())};
         // Agent -> Queue
         m_agentToQueue [CONFIG_AGENT_NAME] = CONFIG_MSG_QUEUE_NAME;
         m_agentToQueue [EMC4J_AGENT_NAME] = EMC4J_MSG_QUEUE_NAME;
         m_agentToQueue [SECU_WALLET_AGENT_NAME] = SECU_WALLET_MSG_QUEUE_NAME;
+        m_agentToQueue [ASSET_AGENT_NAME] = ASSET_AGENT_MSG_QUEUE_NAME;
     }
    
     /**
