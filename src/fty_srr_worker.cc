@@ -117,6 +117,16 @@ namespace srr
         // Remove it to do not add twice.
         features.erase(AUTOMATIONS);
         
+        // Asset agent with dependencies
+        ListFeatureResponse featureAssetAgent;
+        FeatureDependencies assetAgentDep;
+        assetAgentDep.set_description(m_featuresToAgent[ASSET_AGENT].featureDescription);
+        assetAgentDep.add_dependencies(SECURITY_WALLET);
+        featureAssetAgent.mutable_map_features_dependencies()->insert({ASSET_AGENT, assetAgentDep});
+
+        // Remove it to do not add twice.
+        features.erase(ASSET_AGENT);
+
         // Remaining features
         ListFeatureResponse otherFeatures;
         for (const auto& feature : features)
@@ -128,6 +138,7 @@ namespace srr
         
         // Features concatenation        
         response += featureAutomation;
+        response += featureAssetAgent;
         response += otherFeatures;
         response.set_version(m_srrVersion);
         response.set_passphrass_definition(fty::getPassphraseFormat());
