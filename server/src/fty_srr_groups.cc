@@ -167,14 +167,14 @@ auto initSrrFeatures= []() {
     tmp[F_SECURITY_WALLET].m_restart = true;
     tmp[F_SECURITY_WALLET].m_reset = false;
 
-    /*tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME];
+    tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME];
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_id = F_USER_SESSION_MANAGEMENT_FEATURE_NAME;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_name = F_USER_SESSION_MANAGEMENT_FEATURE_NAME;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_description = TRANSLATE_ME("srr_user-session-management");
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_agent = USM_AGENT_NAME;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_requiredIn = {"2.1"};
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_restart = true;
-    tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_reset = false;*/
+    tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_reset = false;
 
     tmp[F_VIRTUAL_ASSETS];
     tmp[F_VIRTUAL_ASSETS].m_id = F_VIRTUAL_ASSETS;
@@ -258,12 +258,12 @@ auto initSrrGroups = []() {
     tmp[G_NOTIFICATION_FEATURE_NAME].m_fp.push_back(SrrFeaturePriorityStruct(F_NOTIFICATION_FEATURE_NAME, 1));
 
     // add features to user session management group
-    /*tmp[G_USER_SESSION_MANAGEMENT].m_id = G_USER_SESSION_MANAGEMENT;
+    tmp[G_USER_SESSION_MANAGEMENT].m_id = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_name = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_description = TRANSLATE_ME("srr_group-user-session-management");
     tmp[G_USER_SESSION_MANAGEMENT].m_restoreOrder = 6;
 
-    tmp[G_USER_SESSION_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_USER_SESSION_MANAGEMENT_FEATURE_NAME, 1));*/
+    tmp[G_USER_SESSION_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_USER_SESSION_MANAGEMENT_FEATURE_NAME, 1));
 
     return tmp;
 };
