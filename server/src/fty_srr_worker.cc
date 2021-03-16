@@ -532,11 +532,25 @@ namespace srr
                 } else {
                     srrRestoreResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
                 }
-            } else if(srrRestoreReq.m_version == "2.0") {
+            } else if(srrRestoreReq.m_version == "2.0" || srrRestoreReq.m_version == "2.1") {
                 std::list<std::string> groupsIntegrityCheckFailed;  // stores groups for which integrity check failed
 
                 std::shared_ptr<SrrRestoreRequestDataV2> dataPtr = std::dynamic_pointer_cast<SrrRestoreRequestDataV2>(srrRestoreReq.m_data_ptr);
                 auto& groups = dataPtr->m_data;
+
+                // sort groups by restore order
+                std::sort(groups.begin(), groups.end(), [&] (const Group& l, const Group& r) {
+                    unsigned priorityL = 0;
+                    unsigned priorityR = 0;
+                    try{
+                        // unknown groups will be placed at the end and skipped
+                        priorityL = g_srrGroupMap.at(l.m_group_id).m_restoreOrder;
+                        priorityR = g_srrGroupMap.at(r.m_group_id).m_restoreOrder;
+                    } catch(const std::exception& e) {
+                        return false;
+                    }
+                    return priorityL < priorityR;
+                });
 
                 // sort features in each group by priority
                 for(auto& group : groups) {
@@ -600,13 +614,24 @@ namespace srr
                         // loop through all required features to create the restore queries
                         for (const auto& feature : g_srrGroupMap.at(groupId).m_fp) {
                             const auto& featureName = feature.m_feature;
-                            const auto& dtoFeature = ftMap.at(featureName).feature();
+                            try{
+                                const auto& dtoFeature = ftMap.at(featureName).feature();
 
-                            // prepare restore queries
-                            RestoreQuery& request = restoreQueriesMap[featureName];
-                            request.set_passpharse(srrRestoreReq.m_passphrase);
-                            request.set_session_token(srrRestoreReq.m_sessionToken);
-                            request.mutable_map_features_data()->insert({featureName, dtoFeature});
+                                // prepare restore queries
+                                RestoreQuery& request = restoreQueriesMap[featureName];
+                                request.set_passpharse(srrRestoreReq.m_passphrase);
+                                request.set_session_token(srrRestoreReq.m_sessionToken);
+                                request.mutable_map_features_data()->insert({featureName, dtoFeature});
+                            } catch(const std::out_of_range& e) {
+                                // missing feature, check if it required in restore payload version
+                                const auto requiredIn = g_srrFeatureMap.at(featureName).m_requiredIn;
+                                if(auto found = std::find(requiredIn.begin(), requiredIn.end(), srrRestoreReq.m_version); found != requiredIn.end()) {
+                                    log_error("Feature %s is required in version %s", featureName.c_str(), srrRestoreReq.m_version);
+                                    throw std::runtime_error("Feature " + featureName + " is required in version " + srrRestoreReq.m_version);
+                                }
+                            } catch (const std::exception& e) {
+                                throw std::runtime_error(e.what());
+                            }
                         }
                     }   // if one feature is missing, set the error for the whole group and skip the group
                     catch (std::out_of_range& ex) {

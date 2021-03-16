@@ -114,7 +114,7 @@ namespace srr
             m_uiBus->connect();
             
             // Worker creation.
-            m_srrworker = std::unique_ptr<srr::SrrWorker>(new srr::SrrWorker(*m_backEndBus, m_parameters, {"1.0", "2.0"}));
+            m_srrworker = std::unique_ptr<srr::SrrWorker>(new srr::SrrWorker(*m_backEndBus, m_parameters, {"1.0", "2.0", "2.1"}));
             
             // Bind all processor handler.
             m_processor.listHandler = std::bind(&SrrWorker::getGroupList, m_srrworker.get());

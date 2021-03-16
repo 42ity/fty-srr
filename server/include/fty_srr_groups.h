@@ -24,6 +24,7 @@
 #include "fty-srr.h"
 
 #include <fty_common_macros.h>
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -41,6 +42,8 @@ typedef struct SrrFeatureStruct
 
     std::string m_agent;
 
+    std::list<std::string> m_requiredIn;
+
     bool m_restart;
     bool m_reset;
 } SrrFeatureStruct;
@@ -57,6 +60,7 @@ typedef struct SrrGroupStruct
     std::string m_id;
     std::string m_name;
     std::string m_description;
+    unsigned    m_restoreOrder; // define restore order (lower is restored before)
 
     std::vector<SrrFeaturePriorityStruct> m_fp;
 } SrrGroupStruct;

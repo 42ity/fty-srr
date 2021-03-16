@@ -322,7 +322,7 @@ void opRestore(const std::string& passphrase, const std::string& sessionToken, s
         srr::SrrRestoreRequestDataV1 reqData;
         siJson.getMember("data") >>= reqData.m_data;
         req.m_data_ptr = std::shared_ptr<srr::SrrRestoreRequestData>(new srr::SrrRestoreRequestDataV1(reqData));
-    } else if(req.m_version == "2.0") {
+    } else if(req.m_version == "2.0" || req.m_version == "2.1") {
         srr::SrrRestoreRequestDataV2 reqData;
         siJson.getMember("data") >>= reqData.m_data;
         req.m_data_ptr = std::shared_ptr<srr::SrrRestoreRequestData>(new srr::SrrRestoreRequestDataV2(reqData));

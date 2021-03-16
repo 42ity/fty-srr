@@ -78,7 +78,7 @@ namespace srr
           } else {
               throw std::runtime_error ("Invalid data pointer");
           }
-      } else if (req.m_version == "2.0") {
+      } else if (req.m_version == "2.0" || req.m_version == "2.1") {
           auto dataPtr =
             std::dynamic_pointer_cast<SrrRestoreRequestDataV2> (req.m_data_ptr);
           if (dataPtr) {
@@ -105,7 +105,7 @@ namespace srr
           si.getMember (SI_DATA) >>=
             std::dynamic_pointer_cast<SrrRestoreRequestDataV1> (dataPtr)->m_data;
           req.m_data_ptr = dataPtr;
-      } else if (req.m_version == "2.0") {
+      } else if (req.m_version == "2.0" || req.m_version == "2.1") {
           std::shared_ptr<SrrRestoreRequestData> dataPtr (
             new SrrRestoreRequestDataV2);
 
