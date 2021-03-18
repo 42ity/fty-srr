@@ -648,35 +648,28 @@ namespace srr
                         continue;
                     }
 
+                    // get list of features in the group (based on current version)
+                    const auto featureList = g_srrGroupMap.at(group.m_group_id).m_fp;
+
                     // save group status to perform a rollback in case of error
                     SaveResponse rollbackSaveResponse;
                     try {
-                        for(const auto& feature : group.m_features) {
-                            log_debug("Saving feature %s current status", feature.m_feature_name.c_str());
-
-                            rollbackSaveResponse += saveFeature(feature.m_feature_name, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
+                        for(const auto& feature : featureList) {
+                            log_debug("Saving feature %s current status", feature.m_feature.c_str());
+                            rollbackSaveResponse += saveFeature(feature.m_feature, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
                         }
                     }
                     catch (std::exception& ex) {
-                        RestoreStatus restoreStatus;
-                        restoreStatus.m_name = groupId;
-                        restoreStatus.m_status = statusToString(Status::FAILED);
-                        restoreStatus.m_error = TRANSLATE_ME("Could not backup group %s. The group will not be restored", groupId.c_str());
+                        log_error("Could not backup feature %s", groupId.c_str());
 
-                        srrRestoreResp.m_status_list.push_back(restoreStatus);
-
-                        log_error(restoreStatus.m_error.c_str());
-
-                        allGroupsRestored = false;
-                        continue;
                     }
 
                     // reset features in reverse order before restore
                     // WARNING: currently reset is not implemented by all features, hence it will not be mandatory
-                    for(auto revIt = group.m_features.rbegin(); revIt != group.m_features.rend(); revIt++) {
-                        if(g_srrFeatureMap.at(revIt->m_feature_name).m_reset) {
+                    for(auto revIt = featureList.rbegin(); revIt != featureList.rend(); revIt++) {
+                        if(g_srrFeatureMap.at(revIt->m_feature).m_reset) {
                             try{
-                                resetFeature(revIt->m_feature_name);
+                                resetFeature(revIt->m_feature);
                             }
                             catch (SrrResetFailed& ex) {
                                 log_warning(ex.what());
