@@ -1,5 +1,5 @@
 {
-	"srr_group-assets" : "Assets management", 
+	"srr_group-assets" : "Assets management",
 	"srr_security-wallet" : "Security Wallet",
 	"srr_asset-agent" : "Physical assets",
 	"srr_automatic-groups" : "Automatic groups",
@@ -17,6 +17,6 @@
 	"srr_network" : "Network settings",
 	"srr_group-notification-feature-name" : "Notification settings",
 	"srr_notification" : "Email settings",
-	"srr_group-user-session-feature-name" : "User session settings",
-	"srr_user-session" : "User session settings"
+    "srr_group-user-session-management" : "Users and sessions settings",
+    "srr_user-session-management" : "User and sessions settings"
 }
