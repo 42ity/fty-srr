@@ -39,6 +39,7 @@ etn_target(exe ${PROJECT_NAME}-cmd
         src/dto/common.cc
         src/dto/request.cc
         src/dto/response.cc
+        src/helpers/utilsReauth.cc
     INCLUDE_DIRS
         include
     USES_PRIVATE
@@ -83,4 +84,3 @@ install(FILES
 )
 
 ##############################################################################################################
-

@@ -28,7 +28,7 @@
 
 #include "dto/request.h"
 #include "dto/response.h"
-
+#include "helpers/utilsReauth.h"
 
 #include <cxxtools/serializationinfo.h>
 #include <fty/command-line.h>
@@ -66,7 +66,7 @@ std::ostream &operator<< (std::ostream &os, const std::vector<T> &vec)
     os << *it;
     return os;
 }
-
+// Utils
 dto::UserData sendRequest (const std::string &action,
                            const dto::UserData &userData);
 
@@ -99,6 +99,7 @@ int main (int argc, char **argv)
     std::string fileName;
     std::string groups;
     std::string passphrase;
+    std::string passwd{};
     std::string sessionToken{};
 
     if(std::getenv(SESSION_TOKEN_ENV_VAR))
@@ -110,6 +111,7 @@ int main (int argc, char **argv)
     fty::CommandLine cmd("### - SRR command line\n      Usage: fty-srr-cmd <list|save|restore|reset> [options]", {
         {"--help|-h", help, "Show this help"},
         {"--passphrase|-p", passphrase, "Passhphrase to save/restore groups"},
+        {"--password|-pwd", passwd, "Password to restore groups (reauthentication)"},
         {"--token|-t", sessionToken, "Session token to save/restore groups if needed"},
         {"--groups|-g", groups, "Select groups to save (default to all groups)"},
         {"--file|-f", fileName, "Path to the JSON file to save/restore. If not specified, standard input/output is used"},
@@ -171,6 +173,14 @@ int main (int argc, char **argv)
             std::cout << cmd.help() << std::endl;
             return EXIT_FAILURE;
         }
+        if(passwd.empty()) {
+            std::cerr << "### - Password for reauthentication is required with restore operation" << std::endl;
+            std::cout << cmd.help() << std::endl;
+            return EXIT_FAILURE;
+        } else if(!srr::utils::isPasswordValidated(passwd)) {
+            std::cerr << "### - Wrong password, please retry" << std::endl;
+            return EXIT_FAILURE;
+        }
         std::ifstream inputFile;
         if(!fileName.empty()) {
             try{
@@ -182,7 +192,8 @@ int main (int argc, char **argv)
         } else {
             std::cout << "### - No input file specified, waiting for input from stdin" << std::endl;
         }
-        opRestore(passphrase, sessionToken, inputFile.is_open() ? inputFile : std::cin, force);
+        std::string reauthToken = srr::utils::buildReauthToken(sessionToken, passwd);
+        opRestore(passphrase, reauthToken, inputFile.is_open() ? inputFile : std::cin, force);
         if(inputFile.is_open()) {
             inputFile.close();
         }
