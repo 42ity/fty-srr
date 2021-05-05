@@ -34,7 +34,7 @@
 #include "fty_srr_worker.h"
 #include "fty-srr.h"
 
-#include "fty_common_mlm_library.h"
+#include "fty_common_mlm.h"
 
 //functions
 
