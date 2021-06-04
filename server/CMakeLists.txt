@@ -6,17 +6,26 @@ cmake_policy(VERSION 3.13)
 etn_target(exe ${PROJECT_NAME}
     SOURCES
         src/fty-srr.cc
+        src/fty-srr.h
         src/fty_srr_groups.cc
+        src/fty_srr_groups.h
         src/fty_srr_manager.cc
+        src/fty_srr_manager.h
         src/fty_srr_worker.cc
+        src/fty_srr_worker.h
         src/dto/common.cc
+        src/dto/common.h
         src/dto/request.cc
+        src/dto/request.h
         src/dto/response.cc
+        src/dto/response.h
         src/helpers/data_integrity.cc
+        src/helpers/data_integrity.h
         src/helpers/utils.cc
+        src/helpers/utils.h
 
     INCLUDE_DIRS
-        include
+        src
 
     USES_PRIVATE
         cxxtools
@@ -37,11 +46,15 @@ etn_target(exe ${PROJECT_NAME}-cmd
     SOURCES
         src/fty-srr-cmd.cc
         src/dto/common.cc
+        src/dto/common.h
         src/dto/request.cc
+        src/dto/request.h
         src/dto/response.cc
+        src/dto/response.h
         src/helpers/utilsReauth.cc
+        src/helpers/utilsReauth.h
     INCLUDE_DIRS
-        include
+        src
     USES_PRIVATE
         cxxtools
         fty_common

@@ -23,8 +23,9 @@
 
 #include <string>
 
-namespace srr::utils
-{
-  bool isPasswordValidated(const std::string& passwd);
-  std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd);
-}
+namespace srr::utils {
+
+bool        isPasswordValidated(const std::string& passwd);
+std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd);
+
+} // namespace srr::utils
