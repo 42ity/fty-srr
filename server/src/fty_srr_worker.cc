@@ -30,7 +30,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <fty_common.h>
-#include <fty_lib_certificate_library.h>
+#include <fty-lib-certificate.h>
 #include <numeric>
 #include <thread>
 #include <vector>
@@ -612,7 +612,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                             if (auto found = std::find(requiredIn.begin(), requiredIn.end(), srrRestoreReq.m_version);
                                 found != requiredIn.end()) {
                                 log_error("Feature %s is required in version %s", featureName.c_str(),
-                                    srrRestoreReq.m_version);
+                                    srrRestoreReq.m_version.c_str());
                                 throw std::runtime_error(
                                     "Feature " + featureName + " is required in version " + srrRestoreReq.m_version);
                             }
