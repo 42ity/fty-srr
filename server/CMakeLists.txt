@@ -19,6 +19,7 @@ etn_target(exe ${PROJECT_NAME}
         include
 
     USES_PRIVATE
+        czmq
         cxxtools
         fty_common
         fty_common_dto
@@ -26,6 +27,7 @@ etn_target(exe ${PROJECT_NAME}
         fty_common_messagebus
         fty_common_mlm
         fty_lib_certificate
+        fty-pack
         openssl
         protobuf
         pthread
