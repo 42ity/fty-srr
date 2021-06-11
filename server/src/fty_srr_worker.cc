@@ -39,8 +39,11 @@
 #include "helpers/data_integrity.h"
 #include "helpers/utils.h"
 
+#include <etn/licensing/capabilities.h>
 #include <fty_common.h>
+#include <fty_common_mlm.h>
 #include <fty_lib_certificate_library.h>
+#include <pack/serialization.h>
 
 #include <chrono>
 #include <cstdlib>
@@ -427,6 +430,58 @@ namespace srr
         return response;
     }
 
+    static std::string zmsg_popstring(zmsg_t *resp){
+        char *popstr = zmsg_popstr (resp);
+        //copies the null-terminated character sequence (C-string) pointed by popstr
+        std::string string_rv = popstr;
+        zstr_free (&popstr);
+        return string_rv;
+    }
+
+    static bool getLicenseCapabilities()
+    {
+        MlmClientPool::Ptr client = mlm_pool.get();
+        if (!client.getPointer())
+        {
+            log_error ("fty-srr: mlm_pool.get () failed.");
+            return false;
+        }
+
+        zmsg_t *req = zmsg_new ();
+        zmsg_addstr(req, "CAPABILITIES");
+
+        zmsg_t *resp = client->requestreply ("etn-licensing", "licensing", 5, &req);
+        if (!resp)
+        {
+            log_error ("fty-srr: client->requestreply (timeout = '5') returned NULL");
+            return false;
+        }
+
+        std::string command = zmsg_popstring(resp);
+        if (command != "CAPABILITIES")
+        {
+            zmsg_destroy (&resp);
+            log_debug ("fty-srr: Unknown command received");
+            return false;
+        }
+
+        std::string code = zmsg_popstring (resp);
+        if (code != "OK")
+        {
+            zmsg_destroy (&resp);
+            log_debug ("fty-srr: %", code.c_str());
+            return false;
+        }
+
+        std::string capabilitiesJson = zmsg_popstring (resp);
+        zmsg_destroy (&resp);
+
+        Capabilities cap;
+        pack::json::deserialize(capabilitiesJson, cap);
+
+        return cap.configurability;
+    }
+
     dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     {
         bool restart = false;
@@ -439,12 +494,15 @@ namespace srr
 
         try
         {
+            if(!getLicenseCapabilities()) {
+                log_error("Restore not allowed by licensing limitations");
+                throw std::runtime_error("Restore not allowed by licensing limitations");
+            }
+
             cxxtools::SerializationInfo requestSi = dto::srr::deserializeJson(json);
             SrrRestoreRequest srrRestoreReq;
 
             requestSi >>= srrRestoreReq;
-
-
 
             std::string passphrase = fty::decrypt(srrRestoreReq.m_checksum, srrRestoreReq.m_passphrase);
 
