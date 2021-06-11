@@ -26,7 +26,7 @@
 #include <cxxtools/serializationinfo.h>
 #include <fstream>
 #include <fty/command-line.h>
-#include <fty/split.h>
+#include <fty/string-utils.h>
 #include <fty_common.h>
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
