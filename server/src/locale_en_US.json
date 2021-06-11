@@ -18,5 +18,7 @@
 	"srr_group-notification-feature-name" : "Notification settings",
 	"srr_notification" : "Email settings",
     "srr_group-user-session-management" : "Users and sessions settings",
-    "srr_user-session-management" : "User and sessions settings"
+    "srr_user-session-management" : "User and sessions settings",
+	"srr_group-virtualization-settings" : "Virtualization settings",
+	"srr_virtualization-settings" : "Virtualization settings"
 }

@@ -65,6 +65,7 @@ constexpr auto G_MONITORING_FEATURE_NAME               = "group-monitoring-featu
 constexpr auto G_NETWORK                               = "group-network";
 constexpr auto G_NOTIFICATION_FEATURE_NAME             = "group-notification-feature-name";
 constexpr auto G_USER_SESSION_MANAGEMENT               = "group-user-session-management";
+constexpr auto G_VIRTUALIZATION_SETTINGS               = "group-virtualization-settings";
 
 // FEATURES
 constexpr auto F_ALERT_AGENT                           = "alert-agent";
@@ -80,9 +81,10 @@ constexpr auto F_NOTIFICATION_FEATURE_NAME             = "notification";
 constexpr auto F_SECURITY_WALLET                       = "security-wallet";
 constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME  = "user-session-management";
 constexpr auto F_VIRTUAL_ASSETS                        = "virtual-assets";
+constexpr auto F_VIRTUALIZATION_SETTINGS               = "virtualization-settings";
 // Common definition
 constexpr auto SRR_VERSION_KEY                         = "version";
-constexpr auto ACTIVE_VERSION                          = "2.0";
+constexpr auto ACTIVE_VERSION                          = "2.1";
 constexpr auto SRR_PREFIX_TRANSLATE_KEY                = "srr_";
 
 #endif

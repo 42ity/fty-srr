@@ -185,6 +185,15 @@ auto initSrrFeatures= []() {
     tmp[F_VIRTUAL_ASSETS].m_restart = true;
     tmp[F_VIRTUAL_ASSETS].m_reset = true;
 
+    tmp[F_VIRTUALIZATION_SETTINGS];
+    tmp[F_VIRTUALIZATION_SETTINGS].m_id = F_VIRTUALIZATION_SETTINGS;
+    tmp[F_VIRTUALIZATION_SETTINGS].m_name = F_VIRTUALIZATION_SETTINGS;
+    tmp[F_VIRTUALIZATION_SETTINGS].m_description = TRANSLATE_ME("srr_virtualization-settings");
+    tmp[F_VIRTUALIZATION_SETTINGS].m_agent = EMC4J_AGENT_NAME;
+    tmp[F_VIRTUALIZATION_SETTINGS].m_requiredIn = {"2.1"};
+    tmp[F_VIRTUALIZATION_SETTINGS].m_restart = true;
+    tmp[F_VIRTUALIZATION_SETTINGS].m_reset = true;
+
     return tmp;
 };
 
@@ -202,6 +211,7 @@ auto initSrrGroups = []() {
     tmp[G_NETWORK];
     tmp[G_NOTIFICATION_FEATURE_NAME];
     tmp[G_USER_SESSION_MANAGEMENT];
+    tmp[G_VIRTUALIZATION_SETTINGS];
 
     // add features to asset group
     tmp[G_ASSETS].m_id = G_ASSETS,
@@ -264,6 +274,14 @@ auto initSrrGroups = []() {
     tmp[G_USER_SESSION_MANAGEMENT].m_restoreOrder = 6;
 
     tmp[G_USER_SESSION_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_USER_SESSION_MANAGEMENT_FEATURE_NAME, 1));
+
+    // add features to virtualization settings group
+    tmp[G_VIRTUALIZATION_SETTINGS].m_id = G_VIRTUALIZATION_SETTINGS;
+    tmp[G_VIRTUALIZATION_SETTINGS].m_name = G_VIRTUALIZATION_SETTINGS;
+    tmp[G_VIRTUALIZATION_SETTINGS].m_description = TRANSLATE_ME("srr_group-virtualization-settings");
+    tmp[G_VIRTUALIZATION_SETTINGS].m_restoreOrder = 7;
+
+    tmp[G_VIRTUALIZATION_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUALIZATION_SETTINGS, 1));
 
     return tmp;
 };
