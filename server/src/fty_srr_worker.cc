@@ -39,7 +39,6 @@
 #include "helpers/data_integrity.h"
 #include "helpers/utils.h"
 
-#include <etn/licensing/capabilities.h>
 #include <fty_common.h>
 #include <fty_common_mlm.h>
 #include <fty_lib_certificate_library.h>
@@ -50,6 +49,9 @@
 #include <numeric>
 #include <vector>
 #include <thread>
+#include <iostream>
+#include <string>
+#include <sstream>
 
 #define SRR_RESTART_DELAY_SEC     5
 #define FEATURE_RESTORE_DELAY_SEC 6
@@ -449,6 +451,7 @@ namespace srr
 
         zmsg_t *req = zmsg_new ();
         zmsg_addstr(req, "CAPABILITIES");
+        zmsg_addstr(req, "configurability");
 
         zmsg_t *resp = client->requestreply ("etn-licensing", "licensing", 5, &req);
         if (!resp)
@@ -473,13 +476,14 @@ namespace srr
             return false;
         }
 
-        std::string capabilitiesJson = zmsg_popstring (resp);
+        std::string configurabilityStr = zmsg_popstring (resp);
         zmsg_destroy (&resp);
 
-        Capabilities cap;
-        pack::json::deserialize(capabilitiesJson, cap);
+        bool configurability;
 
-        return cap.configurability;
+        std::istringstream(configurabilityStr) >> configurability;
+
+        return configurability;
     }
 
     dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
