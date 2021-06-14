@@ -24,7 +24,6 @@ Maintainer:     fty-srr Developers <eatonipcopensource@eaton.com>
 Standards-Version: 4.0.1.0
 Build-Depends: debhelper (>= 9),
     pkg-config,
-    etn-licensing,
     fty-cmake-dev,
     libfty-common-logging-dev,
     libcxxtools-dev,
@@ -44,7 +43,7 @@ Build-Depends: debhelper (>= 9),
 
 Package: fty-srr
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends}, etn-licensing
 Description: runnable binaries from fty-srr
  Main package for fty-srr:
  save, restore and reset agent for 42ity ecosystem
