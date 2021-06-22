@@ -25,24 +25,19 @@
 #include <map>
 #include <string>
 
-namespace messagebus
-{
+namespace messagebus {
 class Message;
 class MessageBus;
-}
+} // namespace messagebus
 
-namespace srr
-{
-void restartBiosService (const unsigned restartDelay);
+namespace srr {
+void restartBiosService(const unsigned restartDelay);
 
-std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent (const std::list<dto::srr::FeatureName> &features);
+std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
+    const std::list<dto::srr::FeatureName>& features);
 
-messagebus::Message sendRequest (messagebus::MessageBus &msgbus,
-                                 const dto::UserData &userData,
-                                 const std::string &action,
-                                 const std::string &from,
-                                 const std::string &queueNameDest,
-                                 const std::string &agentNameDest,
-                                 int timeout = 60);
+messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserData& userData,
+    const std::string& action, const std::string& from, const std::string& queueNameDest,
+    const std::string& agentNameDest, int timeout = 60);
 
-}
+} // namespace srr

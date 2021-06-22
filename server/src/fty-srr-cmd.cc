@@ -19,81 +19,65 @@
     =========================================================================
 */
 
-/*
-@header
-    fty-srr-cmd - Binary
-@discuss
-@end
-*/
-
 #include "dto/request.h"
 #include "dto/response.h"
 #include "helpers/utilsReauth.h"
-
+#include <cstdio>
 #include <cxxtools/serializationinfo.h>
+#include <fstream>
 #include <fty/command-line.h>
+#include <fty/string-utils.h>
 #include <fty_common.h>
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
 #include <fty_log.h>
-#include <fty/split.h>
-
-#include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
-#include <cstdio>
-
-#define END_POINT "ipc://@/malamute"
-#define AGENT_NAME "fty-srr-cmd"
+#define END_POINT                      "ipc://@/malamute"
+#define AGENT_NAME                     "fty-srr-cmd"
 #define AGENT_NAME_REQUEST_DESTINATION "fty-srr-ui"
-#define MSG_QUEUE_NAME "ETN.Q.IPMCORE.SRR.UI"
-#define DEFAULT_TIME_OUT 3600
-#define SESSION_TOKEN_ENV_VAR "USM_BEARER"
+#define MSG_QUEUE_NAME                 "ETN.Q.IPMCORE.SRR.UI"
+#define DEFAULT_TIME_OUT               3600
+#define SESSION_TOKEN_ENV_VAR          "USM_BEARER"
 
 
 using namespace dto::srr;
 
 template <typename T>
-std::ostream &operator<< (std::ostream &os, const std::vector<T> &vec)
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
 {
     auto it = vec.begin();
-    for(; it != vec.end() -1; it++) {
+    for (; it != vec.end() - 1; it++) {
         os << *it << ", ";
     }
     os << *it;
     return os;
 }
 // Utils
-dto::UserData sendRequest (const std::string &action,
-                           const dto::UserData &userData);
+dto::UserData sendRequest(const std::string& action, const dto::UserData& userData);
 
 // operations
-std::vector<std::string> opList (void);
-void opSave (const std::string &passphrase,
-             const std::string &sessionToken,
-             const std::vector<std::string> &groupList,
-             std::ostream &os);
-void opRestore (const std::string &passphrase,
-                const std::string &sessionToken,
-                std::istream &is,
-                bool force);
-void opReset (void);
+std::vector<std::string> opList(void);
+void opSave(const std::string& passphrase, const std::string& sessionToken, const std::vector<std::string>& groupList,
+    std::ostream& os);
+void opRestore(const std::string& passphrase, const std::string& sessionToken, std::istream& is, bool force);
+void opReset(void);
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    //remove the zmq logs
+    // remove the zmq logs
     std::shared_ptr<FILE> stdNull(fopen("/dev/null", "w"), &fclose);
-    zsys_set_logstream (stdNull.get());
+    zsys_set_logstream(stdNull.get());
 
-    //remove log from fty-log
+    // remove log from fty-log
     ftylog_setLogLevelError(ftylog_getInstance());
 
-    bool help = false;
+    bool help  = false;
     bool force = false;
 
     std::string fileName;
@@ -102,9 +86,8 @@ int main (int argc, char **argv)
     std::string passwd{};
     std::string sessionToken{};
 
-    if(std::getenv(SESSION_TOKEN_ENV_VAR))
-    {
-      sessionToken = std::getenv(SESSION_TOKEN_ENV_VAR);
+    if (std::getenv(SESSION_TOKEN_ENV_VAR)) {
+        sessionToken = std::getenv(SESSION_TOKEN_ENV_VAR);
     }
 
     // clang-format off

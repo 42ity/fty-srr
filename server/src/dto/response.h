@@ -22,25 +22,23 @@
 #pragma once
 
 #include "common.h"
-
 #include <cxxtools/serializationinfo.h>
 #include <string>
 #include <vector>
 
-namespace srr
-{
+namespace srr {
+
 // si list reponse fields
-static constexpr const char *SI_PASSPHRASE_DESCRIPTION =
-  "passphrase_description";
-static constexpr const char *SI_PASSPHRASE_VALIDATION = "passphrase_validation";
+static constexpr const char* SI_PASSPHRASE_DESCRIPTION = "passphrase_description";
+static constexpr const char* SI_PASSPHRASE_VALIDATION  = "passphrase_validation";
 
 // si restore response fields
-static constexpr const char *SI_STATUS_LIST = "status_list";
+static constexpr const char* SI_STATUS_LIST = "status_list";
 
 class SrrListResponse
 {
-  public:
-    SrrListResponse (){};
+public:
+    SrrListResponse(){};
 
     std::string m_version;
     std::string m_passphrase_description;
@@ -49,36 +47,34 @@ class SrrListResponse
     std::vector<GroupInfo> m_groups;
 };
 
-void operator<<= (cxxtools::SerializationInfo &si, const SrrListResponse &resp);
-void operator>>= (const cxxtools::SerializationInfo &si, SrrListResponse &resp);
+void operator<<=(cxxtools::SerializationInfo& si, const SrrListResponse& resp);
+void operator>>=(const cxxtools::SerializationInfo& si, SrrListResponse& resp);
 
 class SrrSaveResponse
 {
-  public:
-    SrrSaveResponse (){};
+public:
+    SrrSaveResponse(){};
     std::string m_status;
     std::string m_error;
 
-    std::string m_version;
-    std::string m_checksum;
+    std::string        m_version;
+    std::string        m_checksum;
     std::vector<Group> m_data;
 };
 
-void operator<<= (cxxtools::SerializationInfo &si, const SrrSaveResponse &resp);
-void operator>>= (const cxxtools::SerializationInfo &si, SrrSaveResponse &resp);
+void operator<<=(cxxtools::SerializationInfo& si, const SrrSaveResponse& resp);
+void operator>>=(const cxxtools::SerializationInfo& si, SrrSaveResponse& resp);
 
 class SrrRestoreResponse
 {
-  public:
-    SrrRestoreResponse (){};
-    std::string m_status;
-    std::string m_error;
+public:
+    SrrRestoreResponse(){};
+    std::string                m_status;
+    std::string                m_error;
     std::vector<RestoreStatus> m_status_list;
 };
 
-void operator<<= (cxxtools::SerializationInfo &si,
-                  const SrrRestoreResponse &resp);
-void operator>>= (const cxxtools::SerializationInfo &si,
-                  SrrRestoreResponse &resp);
+void operator<<=(cxxtools::SerializationInfo& si, const SrrRestoreResponse& resp);
+void operator>>=(const cxxtools::SerializationInfo& si, SrrRestoreResponse& resp);
 
-}
+} // namespace srr

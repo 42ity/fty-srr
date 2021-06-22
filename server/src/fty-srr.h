@@ -19,8 +19,7 @@
     =========================================================================
 */
 
-#ifndef FTY_SRR_H_H_INCLUDED
-#define FTY_SRR_H_H_INCLUDED
+#pragma once
 
 //  SRR agent configuration
 constexpr auto REQUEST_TIMEOUT_KEY                     = "requestTimeOut";
@@ -84,5 +83,3 @@ constexpr auto F_VIRTUAL_ASSETS                        = "virtual-assets";
 constexpr auto SRR_VERSION_KEY                         = "version";
 constexpr auto ACTIVE_VERSION                          = "2.0";
 constexpr auto SRR_PREFIX_TRANSLATE_KEY                = "srr_";
-
-#endif
