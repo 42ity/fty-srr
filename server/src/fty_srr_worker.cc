@@ -29,8 +29,8 @@
 #include "helpers/utils.h"
 #include <chrono>
 #include <cstdlib>
-#include <fty_common.h>
 #include <fty-lib-certificate.h>
+#include <fty_common.h>
 #include <numeric>
 #include <thread>
 #include <vector>
@@ -263,9 +263,9 @@ dto::UserData SrrWorker::getGroupList()
 
     log_debug("SRR group list request");
 
-    srrListResp.m_version = m_srrVersion;
+    srrListResp.m_version                = m_srrVersion;
     srrListResp.m_passphrase_description = fty::getPassphraseFormatMessage();
-    srrListResp.m_passphrase_validation = fty::getPassphraseFormat();
+    srrListResp.m_passphrase_validation  = fty::getPassphraseFormat();
 
     for (const auto& mapEntry : g_srrGroupMap) {
         const std::string&    groupId  = mapEntry.first;
