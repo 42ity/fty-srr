@@ -264,8 +264,7 @@ dto::UserData SrrWorker::getGroupList()
     log_debug("SRR group list request");
 
     srrListResp.m_version = m_srrVersion;
-    srrListResp.m_passphrase_description =
-        TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
+    srrListResp.m_passphrase_description = fty::getPassphraseFormatMessage();
     srrListResp.m_passphrase_validation = fty::getPassphraseFormat();
 
     for (const auto& mapEntry : g_srrGroupMap) {
