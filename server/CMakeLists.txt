@@ -23,6 +23,8 @@ etn_target(exe ${PROJECT_NAME}
         src/helpers/data_integrity.h
         src/helpers/utils.cc
         src/helpers/utils.h
+        src/helpers/passPhrase.h
+        src/helpers/passPhrase.cpp
 
     INCLUDE_DIRS
         src

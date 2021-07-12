@@ -26,6 +26,7 @@
 #include "fty_srr_exception.h"
 #include "fty_srr_groups.h"
 #include "helpers/data_integrity.h"
+#include "helpers/passPhrase.h"
 #include "helpers/utils.h"
 #include <chrono>
 #include <cstdlib>
