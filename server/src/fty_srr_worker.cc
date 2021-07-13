@@ -265,8 +265,8 @@ dto::UserData SrrWorker::getGroupList()
     log_debug("SRR group list request");
 
     srrListResp.m_version                = m_srrVersion;
-    srrListResp.m_passphrase_description = fty::getPassphraseFormatMessage();
-    srrListResp.m_passphrase_validation  = fty::getPassphraseFormat();
+    srrListResp.m_passphrase_description = srr::getPassphraseFormatMessage();
+    srrListResp.m_passphrase_validation  = srr::getPassphraseFormat();
 
     for (const auto& mapEntry : g_srrGroupMap) {
         const std::string&    groupId  = mapEntry.first;
@@ -318,7 +318,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
         requestSi >>= srrSaveReq;
 
         // check that passphrase is compliant with requested format
-        if (fty::checkPassphraseFormat(srrSaveReq.m_passphrase)) {
+        if (srr::checkPassphraseFormat(srrSaveReq.m_passphrase)) {
             // evalutate checksum
             srrSaveResp.m_checksum = fty::encrypt(srrSaveReq.m_passphrase, srrSaveReq.m_passphrase);
 
@@ -389,12 +389,12 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
             }
         } else {
             srrSaveResp.m_error =
-                TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
+                TRANSLATE_ME("Passphrase must have %s characters", (srr::getPassphraseFormat()).c_str());
             log_error(srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
         srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
-        ;
+
         log_error(srrSaveResp.m_error.c_str());
     }
 

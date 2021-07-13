@@ -2,7 +2,7 @@
 #include <fty_common_macros.h>
 #include <regex>
 
-namespace fty {
+namespace srr {
 
 static constexpr const char* PASS_PHRASE_FORMAT_REGEX = ".{8,}";
 static constexpr const char* PASS_PHRASE_MESSAGE      = "Passphrase must have 8 characters";

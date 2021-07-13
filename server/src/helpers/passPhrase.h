@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace fty {
+namespace srr {
 
 /**
  * Check pass phraseFormat
