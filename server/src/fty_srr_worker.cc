@@ -388,8 +388,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 srrSaveResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
             }
         } else {
-            srrSaveResp.m_error =
-                TRANSLATE_ME("Passphrase must have %s characters", (srr::getPassphraseFormat()).c_str());
+            srrSaveResp.m_error = srr::getPassphraseFormatMessage();
             log_error(srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
