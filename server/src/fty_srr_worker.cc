@@ -26,11 +26,12 @@
 #include "fty_srr_exception.h"
 #include "fty_srr_groups.h"
 #include "helpers/data_integrity.h"
+#include "helpers/passPhrase.h"
 #include "helpers/utils.h"
 #include <chrono>
 #include <cstdlib>
-#include <fty_common.h>
 #include <fty-lib-certificate.h>
+#include <fty_common.h>
 #include <numeric>
 #include <thread>
 #include <vector>
@@ -263,10 +264,9 @@ dto::UserData SrrWorker::getGroupList()
 
     log_debug("SRR group list request");
 
-    srrListResp.m_version = m_srrVersion;
-    srrListResp.m_passphrase_description =
-        TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
-    srrListResp.m_passphrase_validation = fty::getPassphraseFormat();
+    srrListResp.m_version                = m_srrVersion;
+    srrListResp.m_passphrase_description = srr::getPassphraseFormatMessage();
+    srrListResp.m_passphrase_validation  = srr::getPassphraseFormat();
 
     for (const auto& mapEntry : g_srrGroupMap) {
         const std::string&    groupId  = mapEntry.first;
@@ -318,7 +318,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
         requestSi >>= srrSaveReq;
 
         // check that passphrase is compliant with requested format
-        if (fty::checkPassphraseFormat(srrSaveReq.m_passphrase)) {
+        if (srr::checkPassphraseFormat(srrSaveReq.m_passphrase)) {
             // evalutate checksum
             srrSaveResp.m_checksum = fty::encrypt(srrSaveReq.m_passphrase, srrSaveReq.m_passphrase);
 
@@ -388,13 +388,12 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 srrSaveResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
             }
         } else {
-            srrSaveResp.m_error =
-                TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
+            srrSaveResp.m_error = srr::getPassphraseFormatMessage();
             log_error(srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
         srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
-        ;
+
         log_error(srrSaveResp.m_error.c_str());
     }
 
