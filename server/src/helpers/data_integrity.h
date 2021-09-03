@@ -28,6 +28,6 @@ std::string evalSha256(const std::string& data);
 
 class Group;
 void evalDataIntegrity(Group& group);
-bool checkDataIntegrity(Group& group);
+bool checkDataIntegrity(const Group& group);
 
 } // namespace srr

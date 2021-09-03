@@ -67,7 +67,6 @@ constexpr auto G_NOTIFICATION_FEATURE_NAME = "group-notification-feature-name";
 constexpr auto G_USER_SESSION_MANAGEMENT   = "group-user-session-management";
 constexpr auto G_VIRTUALIZATION_SETTINGS   = "group-virtualization-settings";
 
-
 // FEATURES
 constexpr auto F_ALERT_AGENT                          = "alert-agent";
 constexpr auto F_ASSET_AGENT                          = "asset-agent";

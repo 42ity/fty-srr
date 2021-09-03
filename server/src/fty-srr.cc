@@ -19,20 +19,14 @@
     =========================================================================
  */
 
-/*
-@header
-    fty-srr - Binary
-@discuss
-@end
- */
-
 #include "fty-srr.h"
-#include "fty_common_mlm_library.h"
+#include "fty_common_mlm.h"
 #include "fty_srr_exception.h"
 #include "fty_srr_manager.h"
 #include "fty_srr_worker.h"
 #include <csignal>
 #include <mutex>
+#include <sstream>
 
 // functions
 

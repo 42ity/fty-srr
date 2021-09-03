@@ -4,23 +4,23 @@ fty-srr is an agent who has in charge Save, Restore, and Reset the system.
 
 ## How to build
 
-To build fty-srr project run:
+To build, run:
 
 ```bash
-./autogen.sh
-./configure
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=usr -DBUILD_TESTING=On ..
 make
-make check # to run self-test
+sudo make install
 ```
 
 ## How to run
 
-To run fty-srr project:
+To run:
 
-* from within the source tree, run:
+* from within the build tree, run:
 
 ```bash
-./src/fty-srr
+./fty-srr
 ```
 
 For the other options available, refer to the manual page of fty-srr.

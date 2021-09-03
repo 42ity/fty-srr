@@ -58,7 +58,7 @@ void evalDataIntegrity(Group& group)
     group.m_data_integrity = evalSha256(data);
 }
 
-bool checkDataIntegrity(Group& group)
+bool checkDataIntegrity(const Group& group)
 {
     cxxtools::SerializationInfo tmpSi;
     tmpSi <<= group.m_features;

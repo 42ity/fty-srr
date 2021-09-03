@@ -19,8 +19,7 @@
     =========================================================================
  */
 
-#ifndef FTY_SRR_MANAGER_H_INCLUDED
-#define FTY_SRR_MANAGER_H_INCLUDED
+#pragma once
 
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
@@ -29,10 +28,7 @@
 #include <memory>
 #include <string>
 
-/**
- * \brief Agent srr server
- */
-
+/// Agent srr server
 namespace srr {
 class SrrWorker;
 
@@ -84,5 +80,3 @@ private:
 };
 
 } // namespace srr
-
-#endif

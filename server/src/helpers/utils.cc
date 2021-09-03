@@ -17,10 +17,10 @@
     =========================================================================
 */
 
-#include "helpers/utils.h"
+#include "utils.h"
+#include "dto/common.h"
 #include "fty_srr_exception.h"
 #include "fty_srr_groups.h"
-#include <dto/common.h>
 #include <fty_common.h>
 #include <fty_common_messagebus.h>
 #include <thread>

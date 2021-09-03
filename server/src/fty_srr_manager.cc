@@ -19,13 +19,6 @@
     =========================================================================
  */
 
-/*
-@header
-    fty_srr_server - Fty srr server
-@discuss
-@end
- */
-
 #include "fty_srr_manager.h"
 #include "fty-srr.h"
 #include "fty_srr_exception.h"

@@ -26,94 +26,83 @@
 #include <string>
 
 namespace srr {
-/**
- * Srr exception Class
- * @param
- * @return
- */
-class SrrException : public std::runtime_error
-{
-public:
-    SrrException(const std::string& what)
-        : std::runtime_error(what)
+
+    /**
+     * Srr exception Class
+     * @param 
+     * @return 
+     */
+    class SrrException : public std::runtime_error {
+      public:
+        SrrException(const std::string& what) : std::runtime_error(what) {}
+        SrrException(const char* what) : std::runtime_error(what) {}
+        virtual ~SrrException() = default;
+    };
+
+    struct SrrInvalidVersion : public std::exception
     {
-    }
-    SrrException(const char* what)
-        : std::runtime_error(what)
+        SrrInvalidVersion() {};
+        SrrInvalidVersion(const std::string& err) : m_err(err) {};
+
+        std::string m_err = "Invalid SRR version";
+
+        const char * what () const throw ()
+        {
+            return m_err.c_str();
+        }
+    };
+
+    struct SrrIntegrityCheckFailed : public std::exception
     {
-    }
-    virtual ~SrrException() = default;
-};
+        SrrIntegrityCheckFailed() {};
+        SrrIntegrityCheckFailed(const std::string& err) : m_err(err) {};
 
-struct SrrInvalidVersion : public std::exception
-{
-    SrrInvalidVersion(){};
-    SrrInvalidVersion(const std::string& err)
-        : m_err(err){};
+        std::string m_err = "Integrity Check Failed";
 
-    std::string m_err = "Invalid SRR version";
+        const char * what () const throw ()
+        {
+            return m_err.c_str();
+        }
+    };
 
-    const char* what() const throw()
+    struct SrrSaveFailed : public std::exception
     {
-        return m_err.c_str();
-    }
-};
+        SrrSaveFailed() {};
+        SrrSaveFailed(const std::string& err) : m_err(err) {};
 
-struct SrrIntegrityCheckFailed : public std::exception
-{
-    SrrIntegrityCheckFailed(){};
-    SrrIntegrityCheckFailed(const std::string& err)
-        : m_err(err){};
+        std::string m_err = "Save failed";
 
-    std::string m_err = "Integrity Check Failed";
+        const char * what () const throw ()
+        {
+            return m_err.c_str();
+        }
+    };
 
-    const char* what() const throw()
+    struct SrrRestoreFailed : public std::exception
     {
-        return m_err.c_str();
-    }
-};
+        SrrRestoreFailed() {};
+        SrrRestoreFailed(const std::string& err) : m_err(err) {};
 
-struct SrrSaveFailed : public std::exception
-{
-    SrrSaveFailed(){};
-    SrrSaveFailed(const std::string& err)
-        : m_err(err){};
+        std::string m_err = "Restore failed";
 
-    std::string m_err = "Save failed";
+        const char * what () const throw ()
+        {
+            return m_err.c_str();
+        }
+    };
 
-    const char* what() const throw()
+    struct SrrResetFailed : public std::exception
     {
-        return m_err.c_str();
-    }
-};
+        SrrResetFailed() {};
+        SrrResetFailed(const std::string& err) : m_err(err) {};
 
-struct SrrRestoreFailed : public std::exception
-{
-    SrrRestoreFailed(){};
-    SrrRestoreFailed(const std::string& err)
-        : m_err(err){};
+        std::string m_err = "Reset failed";
 
-    std::string m_err = "Restore failed";
-
-    const char* what() const throw()
-    {
-        return m_err.c_str();
-    }
-};
-
-struct SrrResetFailed : public std::exception
-{
-    SrrResetFailed(){};
-    SrrResetFailed(const std::string& err)
-        : m_err(err){};
-
-    std::string m_err = "Reset failed";
-
-    const char* what() const throw()
-    {
-        return m_err.c_str();
-    }
-};
-} // namespace srr
+        const char * what () const throw ()
+        {
+            return m_err.c_str();
+        }
+    };
+}
 
 #endif

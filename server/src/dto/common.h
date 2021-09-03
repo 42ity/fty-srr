@@ -26,15 +26,8 @@
 #include <string>
 #include <vector>
 
-// namespace dto
-// {
-// namespace srr
-// {
-// class Feature;
-// }
-// }
-
 namespace srr {
+
 // si common fields
 static constexpr const char* SI_VERSION     = "version";
 static constexpr const char* SI_CHECKSUM    = "checksum";

@@ -1,7 +1,0 @@
-   fty-srr -> fty-common-logging;
-   fty-srr -> cxxtools;
-   fty-srr -> fty-common;
-   fty-srr -> fty-common-mlm;
-   fty-srr -> fty-common-messagebus;
-   fty-srr -> fty-common-dto;
-   fty-srr -> protobuf;

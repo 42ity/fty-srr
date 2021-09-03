@@ -19,8 +19,7 @@
     =========================================================================
 */
 
-#ifndef FTY_SRR_WORKER_H_INCLUDED
-#define FTY_SRR_WORKER_H_INCLUDED
+#pragma once
 
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
@@ -30,11 +29,12 @@
 #include <string>
 
 namespace srr {
+
 class SrrWorker
 {
 public:
-    explicit SrrWorker(messagebus::MessageBus& msgBus, const std::map<std::string, std::string>& parameters,
-        const std::set<std::string> supportedVersions);
+    SrrWorker(messagebus::MessageBus& msgBus, const std::map<std::string, std::string>& parameters,
+        const std::set<std::string>& supportedVersions);
     ~SrrWorker() = default;
 
     // UI interface
@@ -64,6 +64,5 @@ private:
     dto::srr::ResetResponse resetFeature(const dto::srr::FeatureName& featureName);
     bool                    rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase);
 };
-} // namespace srr
 
-#endif
+} // namespace srr
