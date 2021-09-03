@@ -1,5 +1,5 @@
 /*  =========================================================================
-    fty_common_messagebus_exception - class description
+    utilsReauth.h - class description
 
     Copyright (C) 2014 - 2020 Eaton
 
@@ -23,13 +23,7 @@
 
 #include <string>
 
-namespace srr
-{
-
-std::string evalSha256 (const std::string &data);
-
-class Group;
-void evalDataIntegrity (Group &group);
-bool checkDataIntegrity (Group &group);
-
-}
+namespace srr::utils {
+bool        isPasswordValidated(const std::string& passwd);
+std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd);
+} // namespace srr::utils

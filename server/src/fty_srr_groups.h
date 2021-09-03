@@ -22,16 +22,14 @@
 #pragma once
 
 #include "fty-srr.h"
-
 #include <fty_common_macros.h>
 #include <list>
 #include <map>
 #include <string>
 #include <vector>
 
-namespace srr
-{
-std::string getGroupFromFeature(const std::string& featureName);
+namespace srr {
+std::string  getGroupFromFeature(const std::string& featureName);
 unsigned int getPriority(const std::string& featureName);
 
 typedef struct SrrFeatureStruct
@@ -50,8 +48,10 @@ typedef struct SrrFeatureStruct
 
 typedef struct SrrFeaturePriorityStruct
 {
-    SrrFeaturePriorityStruct(const std::string& f, unsigned int p) : m_feature(f), m_priority(p) {};
-    std::string m_feature;
+    SrrFeaturePriorityStruct(const std::string& f, unsigned int p)
+        : m_feature(f)
+        , m_priority(p){};
+    std::string  m_feature;
     unsigned int m_priority;
 } SrrFeaturePriorityStruct;
 
@@ -71,4 +71,4 @@ extern const std::map<std::string, SrrGroupStruct> g_srrGroupMap;
 
 extern const std::map<const std::string, const std::string> g_agentToQueue;
 
-}
+} // namespace srr

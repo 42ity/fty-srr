@@ -26,11 +26,10 @@
 @end
  */
 
+#include "fty_srr_manager.h"
 #include "fty-srr.h"
 #include "fty_srr_exception.h"
-#include "fty_srr_manager.h"
 #include "fty_srr_worker.h"
-
 #include <algorithm>
 #include <functional>
 #include <thread>

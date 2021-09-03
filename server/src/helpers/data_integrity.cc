@@ -20,61 +20,53 @@
 */
 
 #include "helpers/data_integrity.h"
-
-#include "fty_srr_groups.h"
 #include "fty_srr_exception.h"
-
+#include "fty_srr_groups.h"
 #include <cxxtools/serializationinfo.h>
 #include <dto/common.h>
 #include <fty_common.h>
 #include <iomanip>
 #include <openssl/sha.h>
 
-namespace srr
-{
-
-std::string evalSha256 (const std::string &data)
+namespace srr {
+std::string evalSha256(const std::string& data)
 {
     unsigned char result[SHA256_DIGEST_LENGTH];
-    SHA256 (const_cast<unsigned char *> (
-              reinterpret_cast<const unsigned char *> (data.c_str ())),
-            data.length (), result);
+    SHA256(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data.c_str())), data.length(), result);
 
     std::ostringstream sout;
-    sout << std::hex << std::setfill ('0');
+    sout << std::hex << std::setfill('0');
     for (long long c : result) {
-        sout << std::setw (2) << c;
+        sout << std::setw(2) << c;
     }
 
-    return sout.str ();
+    return sout.str();
 }
 
-void evalDataIntegrity (Group &group)
+void evalDataIntegrity(Group& group)
 {
     // sort features by priority
-    std::sort (group.m_features.begin (), group.m_features.end (),
-               [&] (SrrFeature l, SrrFeature r) {
-                   return getPriority (l.m_feature_name)
-                          < getPriority (r.m_feature_name);
-               });
+    std::sort(group.m_features.begin(), group.m_features.end(), [&](SrrFeature l, SrrFeature r) {
+        return getPriority(l.m_feature_name) < getPriority(r.m_feature_name);
+    });
 
     // evaluate data integrity
     cxxtools::SerializationInfo tmpSi;
     tmpSi <<= group.m_features;
-    const std::string data = dto::srr::serializeJson (tmpSi, false);
+    const std::string data = dto::srr::serializeJson(tmpSi, false);
 
-    group.m_data_integrity = evalSha256 (data);
+    group.m_data_integrity = evalSha256(data);
 }
 
-bool checkDataIntegrity (Group &group)
+bool checkDataIntegrity(Group& group)
 {
     cxxtools::SerializationInfo tmpSi;
     tmpSi <<= group.m_features;
-    const std::string data = dto::srr::serializeJson (tmpSi, false);
+    const std::string data = dto::srr::serializeJson(tmpSi, false);
 
-    std::string checksum = evalSha256 (data);
+    std::string checksum = evalSha256(data);
 
     return checksum == group.m_data_integrity;
 }
 
-}
+} // namespace srr

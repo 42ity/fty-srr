@@ -21,28 +21,13 @@
 
 #pragma once
 
-#include <fty_common_dto.h>
-#include <map>
 #include <string>
 
-namespace messagebus
-{
-class Message;
-class MessageBus;
-}
+namespace srr {
+std::string evalSha256(const std::string& data);
 
-namespace srr
-{
-void restartBiosService (const unsigned restartDelay);
+class Group;
+void evalDataIntegrity(Group& group);
+bool checkDataIntegrity(Group& group);
 
-std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent (const std::list<dto::srr::FeatureName> &features);
-
-messagebus::Message sendRequest (messagebus::MessageBus &msgbus,
-                                 const dto::UserData &userData,
-                                 const std::string &action,
-                                 const std::string &from,
-                                 const std::string &queueNameDest,
-                                 const std::string &agentNameDest,
-                                 int timeout = 60);
-
-}
+} // namespace srr

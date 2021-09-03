@@ -21,42 +21,35 @@
 
 #include "dto/common.h"
 
-namespace srr
-{
-void operator<<= (cxxtools::SerializationInfo &si, const dto::srr::FeatureAndStatus &fs)
+namespace srr {
+void operator<<=(cxxtools::SerializationInfo& si, const dto::srr::FeatureAndStatus& fs)
 {
     si.addMember(SI_VERSION) <<= fs.feature().version();
     si.addMember(SI_STATUS) <<= dto::srr::statusToString(fs.status().status());
     si.addMember(SI_ERROR) <<= fs.status().error();
 
-    dto::srr::Feature feature = fs.feature();
-    cxxtools::SerializationInfo & data = si.addMember(SI_DATA);
-    try
-    {
-        //try to unserialize the data if they are on Json format
+    dto::srr::Feature            feature = fs.feature();
+    cxxtools::SerializationInfo& data    = si.addMember(SI_DATA);
+    try {
+        // try to unserialize the data if they are on Json format
         cxxtools::SerializationInfo dataSi = dto::srr::deserializeJson(feature.data());
 
-        if(dataSi.category() == cxxtools::SerializationInfo::Category::Void || dataSi.category() == cxxtools::SerializationInfo::Category::Value || dataSi.isNull())
-        {
+        if (dataSi.category() == cxxtools::SerializationInfo::Category::Void ||
+            dataSi.category() == cxxtools::SerializationInfo::Category::Value || dataSi.isNull()) {
             data <<= feature.data();
-        }
-        else
-        {
+        } else {
             dataSi.setName(SI_DATA);
             data = dataSi;
             data.setName(SI_DATA);
             data.setCategory(cxxtools::SerializationInfo::Category::Object);
         }
-        
-    }
-    catch(const std::exception& /* e */)
-    {
-        //put the data as a string if they are not in Json
+    } catch (const std::exception& /* e */) {
+        // put the data as a string if they are not in Json
         data <<= feature.data();
     }
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, dto::srr::FeatureAndStatus &fs)
+void operator>>=(const cxxtools::SerializationInfo& si, dto::srr::FeatureAndStatus& fs)
 {
     si.getMember(SI_VERSION) >>= *(fs.mutable_feature()->mutable_version());
 
@@ -65,19 +58,16 @@ void operator>>= (const cxxtools::SerializationInfo &si, dto::srr::FeatureAndSta
     si.getMember(SI_STATUS) >>= tmpStr;
     fs.mutable_status()->set_status(dto::srr::stringToStatus(tmpStr));
 
-    si.getMember(SI_ERROR) >>= tmpStr;   
+    si.getMember(SI_ERROR) >>= tmpStr;
     fs.mutable_status()->set_error(tmpStr);
 
     cxxtools::SerializationInfo dataSi = si.getMember(SI_DATA);
 
     std::string data;
 
-    if(dataSi.category() == cxxtools::SerializationInfo::Category::Value)
-    {
+    if (dataSi.category() == cxxtools::SerializationInfo::Category::Value) {
         dataSi >>= data;
-    }
-    else
-    {
+    } else {
         dataSi.setName("");
         data = dto::srr::serializeJson(dataSi);
     }
@@ -85,12 +75,12 @@ void operator>>= (const cxxtools::SerializationInfo &si, dto::srr::FeatureAndSta
     fs.mutable_feature()->set_data(data);
 }
 
-void operator<<= (cxxtools::SerializationInfo &si, const SrrFeature &f)
+void operator<<=(cxxtools::SerializationInfo& si, const SrrFeature& f)
 {
     si.addMember(f.m_feature_name) <<= f.m_feature_and_status;
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, SrrFeature &f)
+void operator>>=(const cxxtools::SerializationInfo& si, SrrFeature& f)
 {
     auto& tmpSi = si.getMember(0);
 
@@ -98,62 +88,62 @@ void operator>>= (const cxxtools::SerializationInfo &si, SrrFeature &f)
     tmpSi >>= f.m_feature_and_status;
 }
 
-void operator<<= (cxxtools::SerializationInfo &si, const FeatureInfo &resp)
+void operator<<=(cxxtools::SerializationInfo& si, const FeatureInfo& resp)
 {
-    si.addMember (SI_NAME) <<= resp.m_name;
-    si.addMember (SI_DESCRIPTION) <<= resp.m_description;
+    si.addMember(SI_NAME) <<= resp.m_name;
+    si.addMember(SI_DESCRIPTION) <<= resp.m_description;
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, FeatureInfo &resp)
+void operator>>=(const cxxtools::SerializationInfo& si, FeatureInfo& resp)
 {
-    si.getMember (SI_NAME) >>= resp.m_name;
-    si.getMember (SI_DESCRIPTION) >>= resp.m_description;
+    si.getMember(SI_NAME) >>= resp.m_name;
+    si.getMember(SI_DESCRIPTION) >>= resp.m_description;
 }
 
-void operator<<= (cxxtools::SerializationInfo &si, const Group &resp)
+void operator<<=(cxxtools::SerializationInfo& si, const Group& resp)
 {
-    si.addMember (SI_GROUP_ID) <<= resp.m_group_id;
-    si.addMember (SI_GROUP_NAME) <<= resp.m_group_name;
-    si.addMember (SI_DATA_INTEGRITY) <<= resp.m_data_integrity;
-    si.addMember (SI_FEATURES) <<= resp.m_features;
+    si.addMember(SI_GROUP_ID) <<= resp.m_group_id;
+    si.addMember(SI_GROUP_NAME) <<= resp.m_group_name;
+    si.addMember(SI_DATA_INTEGRITY) <<= resp.m_data_integrity;
+    si.addMember(SI_FEATURES) <<= resp.m_features;
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, Group &resp)
+void operator>>=(const cxxtools::SerializationInfo& si, Group& resp)
 {
-    si.getMember (SI_GROUP_ID) >>= resp.m_group_id;
-    si.getMember (SI_GROUP_NAME) >>= resp.m_group_name;
-    si.getMember (SI_DATA_INTEGRITY) >>= resp.m_data_integrity;
-    si.getMember (SI_FEATURES) >>= resp.m_features;
+    si.getMember(SI_GROUP_ID) >>= resp.m_group_id;
+    si.getMember(SI_GROUP_NAME) >>= resp.m_group_name;
+    si.getMember(SI_DATA_INTEGRITY) >>= resp.m_data_integrity;
+    si.getMember(SI_FEATURES) >>= resp.m_features;
 }
 
-void operator<<= (cxxtools::SerializationInfo &si, const GroupInfo &resp)
+void operator<<=(cxxtools::SerializationInfo& si, const GroupInfo& resp)
 {
-    si.addMember (SI_GROUP_ID) <<= resp.m_group_id;
-    si.addMember (SI_GROUP_NAME) <<= resp.m_group_name;
-    si.addMember (SI_DESCRIPTION) <<= resp.m_description;
-    si.addMember (SI_FEATURES) <<= resp.m_features;
+    si.addMember(SI_GROUP_ID) <<= resp.m_group_id;
+    si.addMember(SI_GROUP_NAME) <<= resp.m_group_name;
+    si.addMember(SI_DESCRIPTION) <<= resp.m_description;
+    si.addMember(SI_FEATURES) <<= resp.m_features;
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, GroupInfo &resp)
+void operator>>=(const cxxtools::SerializationInfo& si, GroupInfo& resp)
 {
-    si.getMember (SI_GROUP_ID) >>= resp.m_group_id;
-    si.getMember (SI_GROUP_NAME) >>= resp.m_group_name;
-    si.getMember (SI_DESCRIPTION) >>= resp.m_description;
-    si.getMember (SI_FEATURES) >>= resp.m_features;
+    si.getMember(SI_GROUP_ID) >>= resp.m_group_id;
+    si.getMember(SI_GROUP_NAME) >>= resp.m_group_name;
+    si.getMember(SI_DESCRIPTION) >>= resp.m_description;
+    si.getMember(SI_FEATURES) >>= resp.m_features;
 }
 
-void operator<<= (cxxtools::SerializationInfo &si, const RestoreStatus &resp)
+void operator<<=(cxxtools::SerializationInfo& si, const RestoreStatus& resp)
 {
-    si.addMember (SI_NAME) <<= resp.m_name;
-    si.addMember (SI_STATUS) <<= resp.m_status;
-    si.addMember (SI_ERROR) <<= resp.m_error;
+    si.addMember(SI_NAME) <<= resp.m_name;
+    si.addMember(SI_STATUS) <<= resp.m_status;
+    si.addMember(SI_ERROR) <<= resp.m_error;
 }
 
-void operator>>= (const cxxtools::SerializationInfo &si, RestoreStatus &resp)
+void operator>>=(const cxxtools::SerializationInfo& si, RestoreStatus& resp)
 {
-    si.getMember (SI_NAME) >>= resp.m_name;
-    si.getMember (SI_STATUS) >>= resp.m_status;
-    si.getMember (SI_ERROR) >>= resp.m_error;
+    si.getMember(SI_NAME) >>= resp.m_name;
+    si.getMember(SI_STATUS) >>= resp.m_status;
+    si.getMember(SI_ERROR) >>= resp.m_error;
 }
 
-}
+} // namespace srr

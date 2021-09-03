@@ -18,29 +18,26 @@
 */
 
 #include "helpers/utilsReauth.h"
-
 #include <cxxtools/base64codec.h>
 #include <iostream>
 
 
-namespace srr::utils
+namespace srr::utils {
+bool isPasswordValidated(const std::string& passwd)
 {
-  bool isPasswordValidated(const std::string& passwd)
-  {
     auto checkPasswd{"sudo -k; echo '" + passwd + "' | sudo -S test true 1>/dev/null 2>/dev/null"};
 
-    int ret = std::system(checkPasswd.c_str());
+    int  ret      = std::system(checkPasswd.c_str());
     bool passwdOk = false;
 
-    if (WEXITSTATUS(ret) == 0)
-    {
-      passwdOk = true;
+    if (WEXITSTATUS(ret) == 0) {
+        passwdOk = true;
     }
     return passwdOk;
-  }
-
-  std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd)
-  {
-    return cxxtools::Base64Codec::encode(sessionToken + ":" + passwd);
-  }
 }
+
+std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd)
+{
+    return cxxtools::Base64Codec::encode(sessionToken + ":" + passwd);
+}
+} // namespace srr::utils

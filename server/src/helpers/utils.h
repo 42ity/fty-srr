@@ -1,5 +1,5 @@
 /*  =========================================================================
-    utilsReauth.h - class description
+    fty_common_messagebus_exception - class description
 
     Copyright (C) 2014 - 2020 Eaton
 
@@ -21,10 +21,23 @@
 
 #pragma once
 
+#include <fty_common_dto.h>
+#include <map>
 #include <string>
 
-namespace srr::utils
-{
-  bool isPasswordValidated(const std::string& passwd);
-  std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd);
-}
+namespace messagebus {
+class Message;
+class MessageBus;
+} // namespace messagebus
+
+namespace srr {
+void restartBiosService(const unsigned restartDelay);
+
+std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
+    const std::list<dto::srr::FeatureName>& features);
+
+messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserData& userData,
+    const std::string& action, const std::string& from, const std::string& queueNameDest,
+    const std::string& agentNameDest, int timeout = 60);
+
+} // namespace srr

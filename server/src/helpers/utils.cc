@@ -18,29 +18,26 @@
 */
 
 #include "helpers/utils.h"
-
-#include "fty_srr_groups.h"
 #include "fty_srr_exception.h"
-
+#include "fty_srr_groups.h"
 #include <dto/common.h>
 #include <fty_common.h>
 #include <fty_common_messagebus.h>
 #include <thread>
 #include <unistd.h>
 
-namespace srr
-{
+namespace srr {
 // restart method
-void restartBiosService (const unsigned restartDelay)
+void restartBiosService(const unsigned restartDelay)
 {
     for (unsigned i = restartDelay; i > 0; i--) {
-        log_info ("Rebooting in %d seconds...", i);
-        std::this_thread::sleep_for (std::chrono::seconds (1));
+        log_info("Rebooting in %d seconds...", i);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    log_info ("Reboot");
+    log_info("Reboot");
     // write out buffer to disk
-    sync ();
+    sync();
     int ret = std::system("sudo /usr/sbin/fty-srr-reboot.sh");
     if (ret) {
         log_error("failed to run reboot procedure");
@@ -48,19 +45,17 @@ void restartBiosService (const unsigned restartDelay)
 }
 
 
-
-std::map<std::string, std::set<dto::srr::FeatureName>>
-groupFeaturesByAgent (const std::list<dto::srr::FeatureName> &features)
+std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
+    const std::list<dto::srr::FeatureName>& features)
 {
     std::map<std::string, std::set<dto::srr::FeatureName>> map;
 
-    for (const auto &feature : features) {
+    for (const auto& feature : features) {
         try {
-            const std::string &agentName = g_srrFeatureMap.at (feature).m_agent;
-            map[agentName].insert (feature);
-        }
-        catch (std::out_of_range &) {
-            log_warning ("Feature %s not found", feature.c_str ());
+            const std::string& agentName = g_srrFeatureMap.at(feature).m_agent;
+            map[agentName].insert(feature);
+        } catch (std::out_of_range&) {
+            log_warning("Feature %s not found", feature.c_str());
         }
     }
 
@@ -73,15 +68,12 @@ groupFeaturesByAgent (const std::list<dto::srr::FeatureName> &features)
  * @param payload
  * @param subject
  */
-messagebus::Message sendRequest (messagebus::MessageBus &msgbus,
-                                 const dto::UserData &userData,
-                                 const std::string &action,
-                                 const std::string &from,
-                                 const std::string &queueNameDest,
-                                 const std::string &agentNameDest,
-                                 int timeout)
+messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserData& userData,
+    const std::string& action, const std::string& from, const std::string& queueNameDest,
+    const std::string& agentNameDest, int timeout)
 {
-    log_debug("Send message from %s to %s:%s with action %s", from.c_str(), agentNameDest.c_str(), queueNameDest.c_str(), action.c_str());
+    log_debug("Send message from %s to %s:%s with action %s", from.c_str(), agentNameDest.c_str(),
+        queueNameDest.c_str(), action.c_str());
     // for(const auto& msg : userData) {
     //     log_debug("data:\n%s\n", msg.c_str());
     // }
@@ -89,24 +81,20 @@ messagebus::Message sendRequest (messagebus::MessageBus &msgbus,
     messagebus::Message resp;
     try {
         messagebus::Message req;
-        req.userData () = userData;
-        req.metaData ().emplace (messagebus::Message::SUBJECT, action);
-        req.metaData ().emplace (messagebus::Message::FROM, from);
-        req.metaData ().emplace (messagebus::Message::TO, agentNameDest);
-        req.metaData ().emplace (messagebus::Message::CORRELATION_ID,
-                                 messagebus::generateUuid ());
-        resp = msgbus.request (queueNameDest, req, timeout);
-    }
-    catch (messagebus::MessageBusException &ex) {
-        throw SrrException (ex.what ());
-    }
-    catch (...) {
-        throw SrrException (
-          "Unknown error on send response to the message bus");
+        req.userData() = userData;
+        req.metaData().emplace(messagebus::Message::SUBJECT, action);
+        req.metaData().emplace(messagebus::Message::FROM, from);
+        req.metaData().emplace(messagebus::Message::TO, agentNameDest);
+        req.metaData().emplace(messagebus::Message::CORRELATION_ID, messagebus::generateUuid());
+        resp = msgbus.request(queueNameDest, req, timeout);
+    } catch (messagebus::MessageBusException& ex) {
+        throw SrrException(ex.what());
+    } catch (...) {
+        throw SrrException("Unknown error on send response to the message bus");
     }
 
-    log_debug("Message received from %s with action %s", resp.metaData().at(messagebus::Message::FROM).c_str()
-                                                       , resp.metaData().at(messagebus::Message::SUBJECT).c_str());
+    log_debug("Message received from %s with action %s", resp.metaData().at(messagebus::Message::FROM).c_str(),
+        resp.metaData().at(messagebus::Message::SUBJECT).c_str());
 
     // for(const auto& msg : resp.userData()) {
     //     log_debug("data:\n%s\n", msg.c_str());
@@ -114,4 +102,4 @@ messagebus::Message sendRequest (messagebus::MessageBus &msgbus,
     return resp;
 }
 
-}
+} // namespace srr
