@@ -190,6 +190,15 @@ auto initSrrFeatures = []() {
     tmp[F_VIRTUALIZATION_SETTINGS].m_restart     = true;
     tmp[F_VIRTUALIZATION_SETTINGS].m_reset       = true;
 
+    tmp[F_AI_SETTINGS];
+    tmp[F_AI_SETTINGS].m_id          = F_AI_SETTINGS;
+    tmp[F_AI_SETTINGS].m_name        = F_AI_SETTINGS;
+    tmp[F_AI_SETTINGS].m_description = TRANSLATE_ME("srr_ai-settings");
+    tmp[F_AI_SETTINGS].m_agent       = EMC4J_AGENT_NAME;
+    tmp[F_AI_SETTINGS].m_requiredIn  = {"2.1"};
+    tmp[F_AI_SETTINGS].m_restart     = true;
+    tmp[F_AI_SETTINGS].m_reset       = true;
+
     return tmp;
 };
 
@@ -275,6 +284,14 @@ auto initSrrGroups = []() {
     tmp[G_VIRTUALIZATION_SETTINGS].m_restoreOrder = 7;
 
     tmp[G_VIRTUALIZATION_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUALIZATION_SETTINGS, 1));
+
+    // add features to ai settings group
+    tmp[G_AI_SETTINGS].m_id           = G_AI_SETTINGS;
+    tmp[G_AI_SETTINGS].m_name         = G_AI_SETTINGS;
+    tmp[G_AI_SETTINGS].m_description  = TRANSLATE_ME("srr_group-ai-settings");
+    tmp[G_AI_SETTINGS].m_restoreOrder = 7;
+
+    tmp[G_AI_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_AI_SETTINGS, 1));
 
     return tmp;
 };
