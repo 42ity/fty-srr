@@ -24,6 +24,7 @@ Maintainer:     fty-srr Developers <eatonipcopensource@eaton.com>
 Standards-Version: 4.0.1.0
 Build-Depends: debhelper (>= 9),
     pkg-config,
+    etn-licensing-dev,
     fty-cmake-dev,
     libfty-common-logging-dev,
     libcxxtools-dev,

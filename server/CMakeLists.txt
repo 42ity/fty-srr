@@ -32,6 +32,7 @@ etn_target(exe ${PROJECT_NAME}
     USES_PRIVATE
         czmq
         cxxtools
+        etn-licensing-lib
         fty_common
         fty_common_dto
         fty_common_logging
