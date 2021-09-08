@@ -21,5 +21,6 @@
     "srr_user-session-management" : "User and sessions settings",
 	"srr_group-virtualization-settings" : "Virtualization settings",
 	"srr_virtualization-settings" : "Virtualization settings",
+	"srr_group-ai-settings" : "AI settings",
 	"srr_ai-settings" : "AI settings"
 }
