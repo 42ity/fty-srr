@@ -32,9 +32,14 @@
 #include <cstdlib>
 #include <fty-lib-certificate.h>
 #include <fty_common.h>
+#include <fty_common_mlm.h>
+#include <fty_common_mlm_pool.h>
+#include <iostream>
 #include <numeric>
+#include <pack/serialization.h>
+#include <sstream>
+#include <string>
 #include <thread>
-#include <vector>
 
 #define SRR_RESTART_DELAY_SEC     5
 #define FEATURE_RESTORE_DELAY_SEC 6
@@ -388,12 +393,13 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 srrSaveResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
             }
         } else {
-            srrSaveResp.m_error = srr::getPassphraseFormatMessage();
+            srrSaveResp.m_error =
+                TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
             log_error(srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
         srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
-
+        ;
         log_error(srrSaveResp.m_error.c_str());
     }
 
@@ -410,6 +416,57 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
     return response;
 }
 
+static std::string zmsg_popstring(zmsg_t* resp)
+{
+    char* popstr = zmsg_popstr(resp);
+    // copies the null-terminated character sequence (C-string) pointed by popstr
+    std::string string_rv = popstr;
+    zstr_free(&popstr);
+    return string_rv;
+}
+
+static bool getLicenseCapabilities()
+{
+    MlmClientPool::Ptr client = mlm_pool.get();
+    if (!client.getPointer()) {
+        log_error("fty-srr: mlm_pool.get () failed.");
+        return false;
+    }
+
+    zmsg_t* req = zmsg_new();
+    zmsg_addstr(req, "CAPABILITIES");
+    zmsg_addstr(req, "configurability");
+
+    zmsg_t* resp = client->requestreply("etn-licensing", "licensing", 5, &req);
+    if (!resp) {
+        log_error("fty-srr: client->requestreply (timeout = '5') returned NULL");
+        return false;
+    }
+
+    std::string command = zmsg_popstring(resp);
+    if (command != "CAPABILITIES") {
+        zmsg_destroy(&resp);
+        log_debug("fty-srr: Unknown command received");
+        return false;
+    }
+
+    std::string code = zmsg_popstring(resp);
+    if (code != "OK") {
+        zmsg_destroy(&resp);
+        log_debug("fty-srr: %", code.c_str());
+        return false;
+    }
+
+    std::string configurabilityStr = zmsg_popstring(resp);
+    zmsg_destroy(&resp);
+
+    bool configurability;
+
+    std::istringstream(configurabilityStr) >> configurability;
+
+    return configurability;
+}
+
 dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 {
     bool restart = false;
@@ -421,11 +478,15 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     srrRestoreResp.m_status = statusToString(Status::FAILED);
 
     try {
+        if (!getLicenseCapabilities()) {
+            log_error("Restore not allowed by licensing limitations");
+            throw std::runtime_error("Restore not allowed by licensing limitations");
+        }
+
         cxxtools::SerializationInfo requestSi = dto::srr::deserializeJson(json);
         SrrRestoreRequest           srrRestoreReq;
 
         requestSi >>= srrRestoreReq;
-
 
         std::string passphrase = fty::decrypt(srrRestoreReq.m_checksum, srrRestoreReq.m_passphrase);
 
@@ -611,7 +672,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                             if (auto found = std::find(requiredIn.begin(), requiredIn.end(), srrRestoreReq.m_version);
                                 found != requiredIn.end()) {
                                 log_error("Feature %s is required in version %s", featureName.c_str(),
-                                    srrRestoreReq.m_version.c_str());
+                                    srrRestoreReq.m_version);
                                 throw std::runtime_error(
                                     "Feature " + featureName + " is required in version " + srrRestoreReq.m_version);
                             }

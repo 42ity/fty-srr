@@ -27,7 +27,6 @@
 #include <vector>
 
 namespace srr {
-
 // si list reponse fields
 static constexpr const char* SI_PASSPHRASE_DESCRIPTION = "passphrase_description";
 static constexpr const char* SI_PASSPHRASE_VALIDATION  = "passphrase_validation";

@@ -28,7 +28,6 @@
 #include <vector>
 
 namespace srr {
-
 // si save request fields
 static constexpr const char* SI_GROUP_LIST = "group_list";
 

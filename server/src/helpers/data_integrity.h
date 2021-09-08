@@ -24,7 +24,6 @@
 #include <string>
 
 namespace srr {
-
 std::string evalSha256(const std::string& data);
 
 class Group;

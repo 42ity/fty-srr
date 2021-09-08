@@ -22,7 +22,6 @@
 #include "dto/request.h"
 
 namespace srr {
-
 using namespace dto::srr;
 
 SrrRestoreRequestData::~SrrRestoreRequestData()

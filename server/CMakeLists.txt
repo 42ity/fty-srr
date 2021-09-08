@@ -30,13 +30,16 @@ etn_target(exe ${PROJECT_NAME}
         src
 
     USES_PRIVATE
+        czmq
         cxxtools
+        etn-licensing-lib
         fty_common
         fty_common_dto
         fty_common_logging
         fty_common_messagebus
         fty_common_mlm
         fty_lib_certificate
+        fty-pack
         openssl
         protobuf
         pthread

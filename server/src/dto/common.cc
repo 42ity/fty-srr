@@ -22,7 +22,6 @@
 #include "dto/common.h"
 
 namespace srr {
-
 void operator<<=(cxxtools::SerializationInfo& si, const dto::srr::FeatureAndStatus& fs)
 {
     si.addMember(SI_VERSION) <<= fs.feature().version();
@@ -44,7 +43,6 @@ void operator<<=(cxxtools::SerializationInfo& si, const dto::srr::FeatureAndStat
             data.setName(SI_DATA);
             data.setCategory(cxxtools::SerializationInfo::Category::Object);
         }
-
     } catch (const std::exception& /* e */) {
         // put the data as a string if they are not in Json
         data <<= feature.data();

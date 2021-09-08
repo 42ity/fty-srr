@@ -23,7 +23,6 @@
 
 
 namespace srr::utils {
-
 bool isPasswordValidated(const std::string& passwd)
 {
     auto checkPasswd{"sudo -k; echo '" + passwd + "' | sudo -S test true 1>/dev/null 2>/dev/null"};
@@ -41,5 +40,4 @@ std::string buildReauthToken(const std::string& sessionToken, const std::string&
 {
     return cxxtools::Base64Codec::encode(sessionToken + ":" + passwd);
 }
-
 } // namespace srr::utils

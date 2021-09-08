@@ -19,67 +19,72 @@
     =========================================================================
 */
 
-#pragma once
+#ifndef FTY_SRR_H_H_INCLUDED
+#define FTY_SRR_H_H_INCLUDED
 
 //  SRR agent configuration
-constexpr auto REQUEST_TIMEOUT_KEY                     = "requestTimeOut";
-constexpr auto AGENT_NAME_KEY                          = "agentName";
-constexpr auto AGENT_NAME                              = "fty-srr";
-constexpr auto ENDPOINT_KEY                            = "endPoint";
-constexpr auto DEFAULT_ENDPOINT                        = "ipc://@/malamute";
-constexpr auto DEFAULT_LOG_CONFIG                      = "/etc/fty/ftylog.cfg";
-constexpr auto SRR_QUEUE_NAME_KEY                      = "queueName";
-constexpr auto SRR_MSG_QUEUE_NAME                      = "ETN.Q.IPMCORE.SRR";
-constexpr auto ENABLE_REBOOT_KEY                       = "enableReboot";
-constexpr auto ENABLE_REBOOT_DEFAULT                   = "true";
+constexpr auto REQUEST_TIMEOUT_KEY   = "requestTimeOut";
+constexpr auto AGENT_NAME_KEY        = "agentName";
+constexpr auto AGENT_NAME            = "fty-srr";
+constexpr auto ENDPOINT_KEY          = "endPoint";
+constexpr auto DEFAULT_ENDPOINT      = "ipc://@/malamute";
+constexpr auto DEFAULT_LOG_CONFIG    = "/etc/fty/ftylog.cfg";
+constexpr auto SRR_QUEUE_NAME_KEY    = "queueName";
+constexpr auto SRR_MSG_QUEUE_NAME    = "ETN.Q.IPMCORE.SRR";
+constexpr auto ENABLE_REBOOT_KEY     = "enableReboot";
+constexpr auto ENABLE_REBOOT_DEFAULT = "true";
 
 // AGENTS AND QUEUES
 // Config agent definition
-constexpr auto CONFIG_AGENT_NAME                       = "fty-config";
-constexpr auto CONFIG_MSG_QUEUE_NAME                   = "ETN.Q.IPMCORE.CONFIG";
+constexpr auto CONFIG_AGENT_NAME     = "fty-config";
+constexpr auto CONFIG_MSG_QUEUE_NAME = "ETN.Q.IPMCORE.CONFIG";
 // EMC4J agent definition
-constexpr auto EMC4J_AGENT_NAME                        = "etn-malamute-translator";
-constexpr auto EMC4J_MSG_QUEUE_NAME                    = "ETN.Q.EMC4J.REQ";
+constexpr auto EMC4J_AGENT_NAME     = "etn-malamute-translator";
+constexpr auto EMC4J_MSG_QUEUE_NAME = "ETN.Q.EMC4J.REQ";
 // Security wallet agent definition
-constexpr auto SECU_WALLET_AGENT_NAME                  = "security-wallet";
-constexpr auto SECU_WALLET_MSG_QUEUE_NAME              = "ETN.Q.IPMCORE.SECUWALLET";
+constexpr auto SECU_WALLET_AGENT_NAME     = "security-wallet";
+constexpr auto SECU_WALLET_MSG_QUEUE_NAME = "ETN.Q.IPMCORE.SECUWALLET";
 // Asset agent definition
-constexpr auto ASSET_AGENT_NAME                        = "asset-agent-srr";
-constexpr auto ASSET_AGENT_MSG_QUEUE_NAME              = "FTY.Q.ASSET.SRR";
+constexpr auto ASSET_AGENT_NAME           = "asset-agent-srr";
+constexpr auto ASSET_AGENT_MSG_QUEUE_NAME = "FTY.Q.ASSET.SRR";
 // Automatic groups
-constexpr auto AUTOMATIC_GROUPS_NAME                   = "automatic-group";
-constexpr auto AUTOMATIC_GROUPS_QUEUE_NAME             = "FTY.Q.GROUP.SRR";
+constexpr auto AUTOMATIC_GROUPS_NAME       = "automatic-group";
+constexpr auto AUTOMATIC_GROUPS_QUEUE_NAME = "FTY.Q.GROUP.SRR";
 // Alert agent definition
-constexpr auto ALERT_AGENT_NAME                        = "alert-agent-srr";
-constexpr auto ALERT_AGENT_MSG_QUEUE_NAME              = "FTY.Q.ALERT.SRR";
+constexpr auto ALERT_AGENT_NAME           = "alert-agent-srr";
+constexpr auto ALERT_AGENT_MSG_QUEUE_NAME = "FTY.Q.ALERT.SRR";
 // User Session Management agent definition
-constexpr auto USM_AGENT_NAME                          = "usm-agent-srr";
-constexpr auto USM_AGENT_MSG_QUEUE_NAME                = "ETN.Q.IPMCORE.USMSRR";
+constexpr auto USM_AGENT_NAME           = "usm-agent-srr";
+constexpr auto USM_AGENT_MSG_QUEUE_NAME = "ETN.Q.IPMCORE.USMSRR";
 
 // GROUPS
-constexpr auto G_ASSETS                                = "group-assets";
-constexpr auto G_DISCOVERY                             = "group-discovery";
-constexpr auto G_MASS_MANAGEMENT                       = "group-mass-management";
-constexpr auto G_MONITORING_FEATURE_NAME               = "group-monitoring-feature-name";
-constexpr auto G_NETWORK                               = "group-network";
-constexpr auto G_NOTIFICATION_FEATURE_NAME             = "group-notification-feature-name";
-constexpr auto G_USER_SESSION_MANAGEMENT               = "group-user-session-management";
+constexpr auto G_ASSETS                    = "group-assets";
+constexpr auto G_DISCOVERY                 = "group-discovery";
+constexpr auto G_MASS_MANAGEMENT           = "group-mass-management";
+constexpr auto G_MONITORING_FEATURE_NAME   = "group-monitoring-feature-name";
+constexpr auto G_NETWORK                   = "group-network";
+constexpr auto G_NOTIFICATION_FEATURE_NAME = "group-notification-feature-name";
+constexpr auto G_USER_SESSION_MANAGEMENT   = "group-user-session-management";
+constexpr auto G_VIRTUALIZATION_SETTINGS   = "group-virtualization-settings";
 
 // FEATURES
-constexpr auto F_ALERT_AGENT                           = "alert-agent";
-constexpr auto F_ASSET_AGENT                           = "asset-agent";
-constexpr auto F_AUTOMATIC_GROUPS                      = "automatic-groups";
-constexpr auto F_AUTOMATION_SETTINGS                   = "automation-settings";
-constexpr auto F_AUTOMATIONS                           = "automations";
-constexpr auto F_DISCOVERY                             = "discovery";
-constexpr auto F_MASS_MANAGEMENT                       = "etn-mass-management";
-constexpr auto F_MONITORING_FEATURE_NAME               = "monitoring";
-constexpr auto F_NETWORK                               = "network";
-constexpr auto F_NOTIFICATION_FEATURE_NAME             = "notification";
-constexpr auto F_SECURITY_WALLET                       = "security-wallet";
-constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME  = "user-session-management";
-constexpr auto F_VIRTUAL_ASSETS                        = "virtual-assets";
+constexpr auto F_ALERT_AGENT                          = "alert-agent";
+constexpr auto F_ASSET_AGENT                          = "asset-agent";
+constexpr auto F_AUTOMATIC_GROUPS                     = "automatic-groups";
+constexpr auto F_AUTOMATION_SETTINGS                  = "automation-settings";
+constexpr auto F_AUTOMATIONS                          = "automations";
+constexpr auto F_DISCOVERY                            = "discovery";
+constexpr auto F_MASS_MANAGEMENT                      = "etn-mass-management";
+constexpr auto F_MONITORING_FEATURE_NAME              = "monitoring";
+constexpr auto F_NETWORK                              = "network";
+constexpr auto F_NOTIFICATION_FEATURE_NAME            = "notification";
+constexpr auto F_SECURITY_WALLET                      = "security-wallet";
+constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME = "user-session-management";
+constexpr auto F_VIRTUAL_ASSETS                       = "virtual-assets";
+constexpr auto F_VIRTUALIZATION_SETTINGS              = "virtualization-settings";
 // Common definition
-constexpr auto SRR_VERSION_KEY                         = "version";
-constexpr auto ACTIVE_VERSION                          = "2.0";
-constexpr auto SRR_PREFIX_TRANSLATE_KEY                = "srr_";
+constexpr auto SRR_VERSION_KEY          = "version";
+constexpr auto ACTIVE_VERSION           = "2.1";
+constexpr auto SRR_PREFIX_TRANSLATE_KEY = "srr_";
+
+#endif

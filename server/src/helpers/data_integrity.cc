@@ -29,7 +29,6 @@
 #include <openssl/sha.h>
 
 namespace srr {
-
 std::string evalSha256(const std::string& data)
 {
     unsigned char result[SHA256_DIGEST_LENGTH];
