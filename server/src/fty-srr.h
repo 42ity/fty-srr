@@ -56,17 +56,21 @@ constexpr auto ALERT_AGENT_MSG_QUEUE_NAME = "FTY.Q.ALERT.SRR";
 // User Session Management agent definition
 constexpr auto USM_AGENT_NAME           = "usm-agent-srr";
 constexpr auto USM_AGENT_MSG_QUEUE_NAME = "ETN.Q.IPMCORE.USMSRR";
+// Remote syslog agent definition
+constexpr auto RSYSLOG_AGENT_NAME           = "etn-syslog";
+constexpr auto RSYSLOG_AGENT_MSG_QUEUE_NAME = "FTY.Q.SYSLOG.SRR";
 
 // GROUPS
-constexpr auto G_ASSETS                    = "group-assets";
-constexpr auto G_DISCOVERY                 = "group-discovery";
-constexpr auto G_MASS_MANAGEMENT           = "group-mass-management";
-constexpr auto G_MONITORING_FEATURE_NAME   = "group-monitoring-feature-name";
-constexpr auto G_NETWORK                   = "group-network";
-constexpr auto G_NOTIFICATION_FEATURE_NAME = "group-notification-feature-name";
-constexpr auto G_USER_SESSION_MANAGEMENT   = "group-user-session-management";
-constexpr auto G_VIRTUALIZATION_SETTINGS   = "group-virtualization-settings";
-constexpr auto G_AI_SETTINGS               = "group-ai-settings";
+constexpr auto G_ASSETS                  = "group-assets";
+constexpr auto G_DISCOVERY               = "group-discovery";
+constexpr auto G_MASS_MANAGEMENT         = "group-mass-management";
+constexpr auto G_MONITORING              = "group-monitoring-feature-name";
+constexpr auto G_NETWORK                 = "group-network";
+constexpr auto G_NOTIFICATION            = "group-notification-feature-name";
+constexpr auto G_RSYSLOG                 = "group-remote-syslog";
+constexpr auto G_USER_SESSION_MANAGEMENT = "group-user-session-management";
+constexpr auto G_VIRTUALIZATION_SETTINGS = "group-virtualization-settings";
+constexpr auto G_AI_SETTINGS             = "group-ai-settings";
 
 // FEATURES
 constexpr auto F_ALERT_AGENT                          = "alert-agent";
@@ -79,6 +83,7 @@ constexpr auto F_MASS_MANAGEMENT                      = "etn-mass-management";
 constexpr auto F_MONITORING_FEATURE_NAME              = "monitoring";
 constexpr auto F_NETWORK                              = "network";
 constexpr auto F_NOTIFICATION_FEATURE_NAME            = "notification";
+constexpr auto F_RSYSLOG_FEATURE_NAME                 = "rsyslog";
 constexpr auto F_SECURITY_WALLET                      = "security-wallet";
 constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME = "user-session-management";
 constexpr auto F_VIRTUAL_ASSETS                       = "virtual-assets";
