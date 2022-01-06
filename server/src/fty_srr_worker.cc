@@ -469,6 +469,7 @@ static bool getLicenseCapabilities()
 
 dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 {
+    const bool IMPVAL_3680_HOTFIX{true}; // 2.4.0, see also IPMVAL-3668
     bool restart = false;
 
     log_debug("SRR restore request");
@@ -494,6 +495,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
             throw std::runtime_error("Invalid passphrase");
         }
 
+        log_info("Restore request (version: %s, force: %s)", srrRestoreReq.m_version.c_str(), (force ? "true" : "false"));
+
         if (srrRestoreReq.m_version == "1.0") {
             const auto& features = srrRestoreReq.m_data_ptr->getSrrFeatures();
 
@@ -512,6 +515,11 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
                 RestoreStatus restoreStatus;
                 restoreStatus.m_name = featureName;
+
+                if (IMPVAL_3680_HOTFIX) {
+                    // WA missing m_description, m_name is used as a string key
+                    restoreStatus.m_name.insert(0, "srr_");
+                }
 
                 // save feature to perform a rollback in case of error
                 SaveResponse rollbackSaveResponse;
@@ -622,7 +630,6 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                                                        groupsIntegrityCheckFailed.end(), std::string(" ")));
             }
 
-
             // start restore procedure
             RestoreResponse response;
             bool            allGroupsRestored = true;
@@ -728,6 +735,11 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                 RestoreStatus restoreStatus;
                 restoreStatus.m_name   = groupId;
                 restoreStatus.m_status = statusToString(Status::SUCCESS);
+
+                if (IMPVAL_3680_HOTFIX) {
+                    // WA missing m_description, m_name is used as a string key
+                    restoreStatus.m_name.insert(0, "srr_");
+                }
 
                 // restore features in order
                 for (const auto& feature : group.m_features) {
