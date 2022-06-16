@@ -15,7 +15,6 @@
 	"srr_monitoring" : "SNMP settings",
 	"srr_group-network" : "Network settings",
 	"srr_network" : "Network settings",
-	"srr_network-agent-settings": "Network agent settings",
 	"srr_network-host-name" : "Network host name",
 	"srr_group-notification-feature-name" : "Notification settings",
 	"srr_notification" : "Email settings",
