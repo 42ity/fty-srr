@@ -1,11 +1,11 @@
 #include "passPhrase.h"
 #include <fty_common_macros.h>
 #include <regex>
+#include <string>
 
 namespace srr {
 
-static constexpr const char* PASS_PHRASE_FORMAT_REGEX = ".{8,}";
-static constexpr const char* PASS_PHRASE_MESSAGE      = "Passphrase must have 8 characters";
+static constexpr auto PASS_PHRASE_FORMAT_REGEX = ".{8,}";
 
 bool checkPassphraseFormat(const std::string& passphrase)
 {
@@ -16,12 +16,12 @@ bool checkPassphraseFormat(const std::string& passphrase)
 
 std::string getPassphraseFormat()
 {
-    return std::string(PASS_PHRASE_FORMAT_REGEX);
+    return PASS_PHRASE_FORMAT_REGEX;
 }
 
 std::string getPassphraseFormatMessage()
 {
-    return TRANSLATE_ME(PASS_PHRASE_MESSAGE);
+    return TRANSLATE_ME("Passphrase must have 8 characters min.");
 }
 
 } // namespace fty

@@ -1,6 +1,4 @@
 /*  =========================================================================
-    fty_srr_server - Fty srr server
-
     Copyright (C) 2014 - 2020 Eaton
 
     This program is free software; you can redistribute it and/or modify
@@ -52,6 +50,7 @@ class SrrFeature
 {
 public:
     SrrFeature(){};
+
     std::string                m_feature_name;
     dto::srr::FeatureAndStatus m_feature_and_status;
 };
@@ -93,7 +92,6 @@ public:
     std::string m_group_id;
     std::string m_group_name;
     std::string m_description;
-
     std::vector<FeatureInfo> m_features;
 };
 
@@ -104,6 +102,7 @@ class RestoreStatus
 {
 public:
     RestoreStatus(){};
+
     std::string m_name;
     std::string m_status;
     std::string m_error;

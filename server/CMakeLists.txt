@@ -75,9 +75,6 @@ etn_target(exe ${PROJECT_NAME}-cmd
 
 #install files
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fty-srr.service.in
-  ${PROJECT_BINARY_DIR}/fty-srr.service @ONLY)
-
 # etc/<project-name>
 install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/fty-srr.cfg
@@ -99,6 +96,7 @@ install(FILES
 )
 
 # lib/systemd/system
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fty-srr.service.in ${PROJECT_BINARY_DIR}/fty-srr.service @ONLY)
 install(FILES
   ${PROJECT_BINARY_DIR}/fty-srr.service
   DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/system/

@@ -1,6 +1,4 @@
 /*  =========================================================================
-    fty_srr_server - Fty srr server
-
     Copyright (C) 2014 - 2020 Eaton
 
     This program is free software; you can redistribute it and/or modify
@@ -22,6 +20,7 @@
 #include "dto/request.h"
 
 namespace srr {
+
 using namespace dto::srr;
 
 SrrRestoreRequestData::~SrrRestoreRequestData()
@@ -68,22 +67,24 @@ void operator<<=(cxxtools::SerializationInfo& si, const SrrRestoreRequest& req)
     si.addMember(SI_CHECKSUM) <<= req.m_checksum;
     si.addMember(SESSION_TOKEN) <<= req.m_sessionToken;
 
-    if (req.m_version == "1.0") {
+    if (IS_VERSION_1(req.m_version)) {
         auto dataPtr = std::dynamic_pointer_cast<SrrRestoreRequestDataV1>(req.m_data_ptr);
         if (dataPtr) {
             si.addMember(SI_DATA) <<= dataPtr->m_data;
         } else {
             throw std::runtime_error("Invalid data pointer");
         }
-    } else if (req.m_version == "2.0" || req.m_version == "2.1") {
+    }
+    else if (IS_VERSION_2(req.m_version)) {
         auto dataPtr = std::dynamic_pointer_cast<SrrRestoreRequestDataV2>(req.m_data_ptr);
         if (dataPtr) {
             si.addMember(SI_DATA) <<= dataPtr->m_data;
         } else {
             throw std::runtime_error("Invalid data pointer");
         }
-    } else {
-        throw std::runtime_error("Data version is not supported");
+    }
+    else {
+        throw std::runtime_error("Data version is not supported (" + req.m_version + ")");
     }
 }
 
@@ -94,18 +95,20 @@ void operator>>=(const cxxtools::SerializationInfo& si, SrrRestoreRequest& req)
     si.getMember(SI_CHECKSUM) >>= req.m_checksum;
     si.getMember(SESSION_TOKEN) >>= req.m_sessionToken;
 
-    if (req.m_version == "1.0") {
+    if (IS_VERSION_1(req.m_version)) {
         std::shared_ptr<SrrRestoreRequestData> dataPtr(new SrrRestoreRequestDataV1);
 
         si.getMember(SI_DATA) >>= std::dynamic_pointer_cast<SrrRestoreRequestDataV1>(dataPtr)->m_data;
         req.m_data_ptr = dataPtr;
-    } else if (req.m_version == "2.0" || req.m_version == "2.1") {
+    }
+    else if (IS_VERSION_2(req.m_version)) {
         std::shared_ptr<SrrRestoreRequestData> dataPtr(new SrrRestoreRequestDataV2);
 
         si.getMember(SI_DATA) >>= std::dynamic_pointer_cast<SrrRestoreRequestDataV2>(dataPtr)->m_data;
         req.m_data_ptr = dataPtr;
-    } else {
-        throw std::runtime_error("Data version is not supported");
+    }
+    else {
+        throw std::runtime_error("Data version is not supported (" + req.m_version + ")");
     }
 }
 

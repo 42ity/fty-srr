@@ -1,6 +1,4 @@
 /*  =========================================================================
-    fty_srr_server - Fty srr server
-
     Copyright (C) 2014 - 2020 Eaton
 
     This program is free software; you can redistribute it and/or modify

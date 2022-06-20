@@ -28,12 +28,17 @@
 #include <mutex>
 #include <sstream>
 
-// functions
-
-void                    usage();
 volatile bool           g_exit = false;
 std::condition_variable g_cv;
 std::mutex              g_cvMutex;
+
+void usage()
+{
+    puts((AGENT_NAME + std::string(" [options] ...")).c_str());
+    puts("  -v|--verbose        verbose test output");
+    puts("  -h|--help           this information");
+    puts("  -c|--config         path to configuration file");
+}
 
 void sigHandler(int)
 {
@@ -58,7 +63,7 @@ void setSignalHandler()
  */
 void terminateHandler()
 {
-    log_error((AGENT_NAME + std::string(" Error")).c_str());
+    logError("{}: Error", AGENT_NAME);
     exit(EXIT_FAILURE);
 }
 
@@ -70,22 +75,18 @@ void terminateHandler()
  */
 int main(int argc, char* argv[])
 {
-    std::string DefaultTimeOut = "60000";
-    using Parameters           = std::map<std::string, std::string>;
-    Parameters paramsConfig;
-
     // Set signal handler
     setSignalHandler();
     // Set terminate pg handler
     std::set_terminate(terminateHandler);
 
-    ftylog_setInstance(AGENT_NAME, "");
+    ftylog_setInstance(AGENT_NAME, FTY_COMMON_LOGGING_DEFAULT_CFG);
 
-    int   argn;
     char* config_file = NULL;
     bool  verbose     = false;
+
     // Parse command line
-    for (argn = 1; argn < argc; argn++) {
+    for (int argn = 1; argn < argc; argn++) {
         char* param = NULL;
         if (argn < argc - 1)
             param = argv[argn + 1];
@@ -93,43 +94,50 @@ int main(int argc, char* argv[])
         if (streq(argv[argn], "--help") || streq(argv[argn], "-h")) {
             usage();
             return EXIT_SUCCESS;
-        } else if (streq(argv[argn], "--verbose") || streq(argv[argn], "-v")) {
+        }
+        else if (streq(argv[argn], "--verbose") || streq(argv[argn], "-v")) {
             verbose = true;
-        } else if (streq(argv[argn], "--config") || streq(argv[argn], "-c")) {
-            if (param) {
-                config_file = param;
+        }
+        else if (streq(argv[argn], "--config") || streq(argv[argn], "-c")) {
+            if (!param) {
+                logError("{}: {}: missing argument", AGENT_NAME, argv[argn]);
+                return EXIT_FAILURE;
             }
+            config_file = param;
             ++argn;
         }
     }
 
     // Default parameters
-    paramsConfig[AGENT_NAME_KEY]      = AGENT_NAME;
-    paramsConfig[ENDPOINT_KEY]        = DEFAULT_ENDPOINT;
-    paramsConfig[SRR_QUEUE_NAME_KEY]  = SRR_MSG_QUEUE_NAME;
-    paramsConfig[SRR_VERSION_KEY]     = ACTIVE_VERSION;
-    paramsConfig[REQUEST_TIMEOUT_KEY] = DefaultTimeOut;
-    paramsConfig[ENABLE_REBOOT_KEY]   = ENABLE_REBOOT_DEFAULT;
+    std::map<std::string, std::string> paramsConfig;
+    paramsConfig[AGENT_NAME_KEY]        = AGENT_NAME;
+    paramsConfig[ENDPOINT_KEY]          = DEFAULT_ENDPOINT;
+    paramsConfig[REQUEST_TIMEOUT_KEY]   = REQUEST_TIMEOUT_DEFAULT;
+    paramsConfig[SRR_QUEUE_NAME_KEY]    = SRR_MSG_QUEUE_NAME;
+    paramsConfig[SRR_VERSION_KEY]       = SRR_ACTIVE_VERSION;
+    paramsConfig[SRR_ENABLE_REBOOT_KEY] = SRR_ENABLE_REBOOT_DEFAULT;
 
     if (config_file) {
-        log_debug((AGENT_NAME + std::string(": loading configuration file from ") + config_file).c_str());
+        logDebug("{}: loading conf. file ({})", AGENT_NAME, config_file);
+
         mlm::ZConfig config(config_file);
-        // verbose mode
+
         std::istringstream(config.getEntry("server/verbose", "0")) >> verbose;
-        paramsConfig[REQUEST_TIMEOUT_KEY] = config.getEntry("server/timeout", DefaultTimeOut);
-        paramsConfig[ENDPOINT_KEY]        = config.getEntry("srr-msg-bus/endpoint", DEFAULT_ENDPOINT);
-        paramsConfig[AGENT_NAME_KEY]      = config.getEntry("srr-msg-bus/address", AGENT_NAME);
-        paramsConfig[SRR_QUEUE_NAME_KEY]  = config.getEntry("srr-msg-bus/srrQueueName", SRR_MSG_QUEUE_NAME);
-        paramsConfig[SRR_VERSION_KEY]     = config.getEntry("srr/version", ACTIVE_VERSION);
-        paramsConfig[ENABLE_REBOOT_KEY]   = config.getEntry("srr/enableReboot", ENABLE_REBOOT_DEFAULT);
+
+        paramsConfig[REQUEST_TIMEOUT_KEY]   = config.getEntry("server/timeout", REQUEST_TIMEOUT_DEFAULT);
+        paramsConfig[ENDPOINT_KEY]          = config.getEntry("srr-msg-bus/endpoint", DEFAULT_ENDPOINT);
+        paramsConfig[AGENT_NAME_KEY]        = config.getEntry("srr-msg-bus/address", AGENT_NAME);
+        paramsConfig[SRR_QUEUE_NAME_KEY]    = config.getEntry("srr-msg-bus/srrQueueName", SRR_MSG_QUEUE_NAME);
+        paramsConfig[SRR_VERSION_KEY]       = config.getEntry("srr/version", SRR_ACTIVE_VERSION);
+        paramsConfig[SRR_ENABLE_REBOOT_KEY] = config.getEntry("srr/enableReboot", SRR_ENABLE_REBOOT_DEFAULT);
     }
 
     if (verbose) {
-        ftylog_setVeboseMode(ftylog_getInstance());
-        log_trace("Verbose mode OK");
+        ftylog_setVerboseMode(ftylog_getInstance());
+        logDebug("{}: Set verbose mode", AGENT_NAME);
     }
 
-    log_info((AGENT_NAME + std::string(" starting")).c_str());
+    logInfo("{}: started", AGENT_NAME);
 
     srr::SrrManager srrManager(paramsConfig);
 
@@ -139,16 +147,8 @@ int main(int argc, char* argv[])
         return g_exit;
     });
 
-    log_info((AGENT_NAME + std::string(" interrupted")).c_str());
+    logInfo("{}: ended", AGENT_NAME);
 
     // Exit application
     return EXIT_SUCCESS;
-}
-
-void usage()
-{
-    puts((AGENT_NAME + std::string(" [options] ...")).c_str());
-    puts("  -v|--verbose        verbose test output");
-    puts("  -h|--help           this information");
-    puts("  -c|--config         path to configuration file");
 }

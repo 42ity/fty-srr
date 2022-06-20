@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 namespace srr {
+
 // restart method
 void restartBiosService(const unsigned restartDelay)
 {
@@ -43,7 +44,6 @@ void restartBiosService(const unsigned restartDelay)
         log_error("failed to run reboot procedure");
     }
 }
-
 
 std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
     const std::list<dto::srr::FeatureName>& features)
