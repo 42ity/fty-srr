@@ -22,15 +22,17 @@
 #include "dto/request.h"
 #include "dto/response.h"
 #include "helpers/utilsReauth.h"
-#include <cstdio>
-#include <cxxtools/serializationinfo.h>
-#include <fstream>
+
 #include <fty/command-line.h>
 #include <fty/string-utils.h>
 #include <fty_common.h>
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
 #include <fty_log.h>
+
+#include <cxxtools/serializationinfo.h>
+#include <cstdio>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -40,7 +42,7 @@
 #define AGENT_NAME                     "fty-srr-cmd"
 #define AGENT_NAME_REQUEST_DESTINATION "fty-srr-ui"
 #define MSG_QUEUE_NAME                 "ETN.Q.IPMCORE.SRR.UI"
-#define DEFAULT_TIME_OUT               (15 * 60) //sec
+#define DEFAULT_TIME_OUT               (20 * 60) //sec
 #define SESSION_TOKEN_ENV_VAR          "USM_BEARER"
 
 using namespace dto::srr;

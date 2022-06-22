@@ -28,15 +28,17 @@
 #include "helpers/data_integrity.h"
 #include "helpers/passPhrase.h"
 #include "helpers/utils.h"
-#include <chrono>
-#include <cstdlib>
-#include <fty-lib-certificate.h>
+
 #include <fty_common.h>
 #include <fty_common_mlm.h>
 #include <fty_common_mlm_pool.h>
+#include <fty-lib-certificate.h>
+#include <pack/serialization.h>
+
+#include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <numeric>
-#include <pack/serialization.h>
 #include <sstream>
 #include <string>
 #include <thread>

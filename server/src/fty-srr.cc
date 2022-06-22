@@ -24,6 +24,7 @@
 #include "fty_srr_exception.h"
 #include "fty_srr_manager.h"
 #include "fty_srr_worker.h"
+
 #include <csignal>
 #include <mutex>
 #include <sstream>
