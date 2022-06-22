@@ -1,6 +1,4 @@
 /*  =========================================================================
-    fty_srr_server - Fty srr server
-
     Copyright (C) 2014 - 2020 Eaton
 
     This program is free software; you can redistribute it and/or modify
@@ -26,6 +24,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+//see SRR_VERSION_ALL SRR_ACTIVE_VERSION
+//std::string version
+#define IS_VERSION_1(version) (version == "1.0")
+#define IS_VERSION_2(version) ((version == "2.0") || (version == "2.1"))
 
 namespace srr {
 // si save request fields

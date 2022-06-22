@@ -19,8 +19,7 @@
     =========================================================================
 */
 
-#ifndef FTY_SRR_EXCEPTION_H_INCLUDED
-#define FTY_SRR_EXCEPTION_H_INCLUDED
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -29,8 +28,8 @@ namespace srr {
 
     /**
      * Srr exception Class
-     * @param 
-     * @return 
+     * @param
+     * @return
      */
     class SrrException : public std::runtime_error {
       public:
@@ -104,5 +103,3 @@ namespace srr {
         }
     };
 }
-
-#endif

@@ -20,9 +20,28 @@
 */
 
 #include "fty_srr_groups.h"
+#include <fty_log.h>
 #include <algorithm>
 
 namespace srr {
+
+std::string getGroupFromFeature(const std::string& featureName)
+{
+    for (const auto& group : g_srrGroupMap) {
+        const auto& fp = group.second.m_fp;
+
+        auto found = std::find_if(fp.begin(), fp.end(), [&](SrrFeaturePriorityStruct x) {
+            return (featureName == x.m_feature);
+        });
+
+        if (found != fp.end()) {
+            return group.first; // groupId (m_id)
+        }
+    }
+
+    return std::string{};
+}
+
 unsigned int getPriority(const std::string& featureName)
 {
     const std::string groupId = getGroupFromFeature(featureName);
@@ -30,11 +49,13 @@ unsigned int getPriority(const std::string& featureName)
     if (groupId.empty()) {
         return 0;
     }
+
     const auto& featurePriority = g_srrGroupMap.at(groupId).m_fp;
     const auto  found =
         std::find_if(featurePriority.begin(), featurePriority.end(), [&](const SrrFeaturePriorityStruct& fp) {
             return featureName == fp.m_feature;
         });
+
     if (found != featurePriority.end()) {
         return found->m_priority;
     } else {
@@ -42,25 +63,7 @@ unsigned int getPriority(const std::string& featureName)
     }
 }
 
-std::string getGroupFromFeature(const std::string& featureName)
-{
-    std::string groupId;
-    for (const auto& group : g_srrGroupMap) {
-        const auto& fp    = group.second.m_fp;
-        auto        found = std::find_if(fp.begin(), fp.end(), [&](SrrFeaturePriorityStruct x) {
-            return (featureName == x.m_feature);
-        });
-
-        if (found != fp.end()) {
-            groupId = group.first;
-            break;
-        }
-    }
-
-    return groupId;
-}
-
-auto initSrrFeatures = []() {
+static auto initSrrFeatures = []() {
     std::map<std::string, SrrFeatureStruct> tmp;
 
     tmp[F_ALERT_AGENT];
@@ -176,7 +179,7 @@ auto initSrrFeatures = []() {
     tmp[F_RSYSLOG_FEATURE_NAME].m_name        = F_RSYSLOG_FEATURE_NAME;
     tmp[F_RSYSLOG_FEATURE_NAME].m_description = TRANSLATE_ME("srr_rsyslog");
     tmp[F_RSYSLOG_FEATURE_NAME].m_agent       = RSYSLOG_AGENT_NAME;
-    tmp[F_RSYSLOG_FEATURE_NAME].m_requiredIn  = {"2.2"};
+    tmp[F_RSYSLOG_FEATURE_NAME].m_requiredIn  = {"2.1"};
     tmp[F_RSYSLOG_FEATURE_NAME].m_restart     = true;
     tmp[F_RSYSLOG_FEATURE_NAME].m_reset       = true;
 
@@ -225,13 +228,13 @@ auto initSrrFeatures = []() {
     tmp[F_AI_SETTINGS].m_restart     = true;
     tmp[F_AI_SETTINGS].m_reset       = true;
 
+    logDebug("initSrrFeatures (size: {})", tmp.size());
     return tmp;
 };
 
-const std::map<std::string, SrrFeatureStruct> g_srrFeatureMap = initSrrFeatures();
-
-auto initSrrGroups = []() {
+static auto initSrrGroups = []() {
     std::map<std::string, SrrGroupStruct> tmp;
+    unsigned int restoreOrder = 0;
 
     // create groups
     tmp[G_ASSETS];
@@ -244,9 +247,10 @@ auto initSrrGroups = []() {
     tmp[G_USER_SESSION_MANAGEMENT];
 
     // add features to asset group
-    tmp[G_ASSETS].m_id = G_ASSETS, tmp[G_ASSETS].m_name = G_ASSETS,
+    tmp[G_ASSETS].m_id           = G_ASSETS;
+    tmp[G_ASSETS].m_name         = G_ASSETS;
     tmp[G_ASSETS].m_description  = TRANSLATE_ME("srr_group-assets");
-    tmp[G_ASSETS].m_restoreOrder = 0;
+    tmp[G_ASSETS].m_restoreOrder = restoreOrder++;
 
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_SECURITY_WALLET, 1));
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_ASSET_AGENT, 2));
@@ -257,9 +261,10 @@ auto initSrrGroups = []() {
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIONS, 7));
 
     // add features to discovery group
-    tmp[G_DISCOVERY].m_id = G_DISCOVERY, tmp[G_DISCOVERY].m_name = G_DISCOVERY,
+    tmp[G_DISCOVERY].m_id           = G_DISCOVERY;
+    tmp[G_DISCOVERY].m_name         = G_DISCOVERY;
     tmp[G_DISCOVERY].m_description  = TRANSLATE_ME("srr_group-discovery");
-    tmp[G_DISCOVERY].m_restoreOrder = 1;
+    tmp[G_DISCOVERY].m_restoreOrder = restoreOrder++;
 
     tmp[G_DISCOVERY].m_fp.push_back(SrrFeaturePriorityStruct(F_DISCOVERY, 1));
 
@@ -267,7 +272,7 @@ auto initSrrGroups = []() {
     tmp[G_MASS_MANAGEMENT].m_id           = G_MASS_MANAGEMENT;
     tmp[G_MASS_MANAGEMENT].m_name         = G_MASS_MANAGEMENT;
     tmp[G_MASS_MANAGEMENT].m_description  = TRANSLATE_ME("srr_group-mass-management");
-    tmp[G_MASS_MANAGEMENT].m_restoreOrder = 2;
+    tmp[G_MASS_MANAGEMENT].m_restoreOrder = restoreOrder++;
 
     tmp[G_MASS_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_MASS_MANAGEMENT, 1));
 
@@ -275,7 +280,7 @@ auto initSrrGroups = []() {
     tmp[G_MONITORING].m_id           = G_MONITORING;
     tmp[G_MONITORING].m_name         = G_MONITORING;
     tmp[G_MONITORING].m_description  = TRANSLATE_ME("srr_group-monitoring-feature-name");
-    tmp[G_MONITORING].m_restoreOrder = 3;
+    tmp[G_MONITORING].m_restoreOrder = restoreOrder++;
 
     tmp[G_MONITORING].m_fp.push_back(SrrFeaturePriorityStruct(F_MONITORING_FEATURE_NAME, 1));
 
@@ -283,7 +288,7 @@ auto initSrrGroups = []() {
     tmp[G_RSYSLOG].m_id           = G_RSYSLOG;
     tmp[G_RSYSLOG].m_name         = G_RSYSLOG;
     tmp[G_RSYSLOG].m_description  = TRANSLATE_ME("srr_group-remote-syslog");
-    tmp[G_RSYSLOG].m_restoreOrder = 4;
+    tmp[G_RSYSLOG].m_restoreOrder = restoreOrder++;
 
     tmp[G_RSYSLOG].m_fp.push_back(SrrFeaturePriorityStruct(F_RSYSLOG_FEATURE_NAME, 1));
 
@@ -291,7 +296,7 @@ auto initSrrGroups = []() {
     tmp[G_NETWORK].m_id           = G_NETWORK;
     tmp[G_NETWORK].m_name         = G_NETWORK;
     tmp[G_NETWORK].m_description  = TRANSLATE_ME("srr_group-network");
-    tmp[G_NETWORK].m_restoreOrder = 5;
+    tmp[G_NETWORK].m_restoreOrder = restoreOrder++;
 
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK, 1));
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_AGENT_SETTINGS, 2));
@@ -301,7 +306,7 @@ auto initSrrGroups = []() {
     tmp[G_NOTIFICATION].m_id           = G_NOTIFICATION;
     tmp[G_NOTIFICATION].m_name         = G_NOTIFICATION;
     tmp[G_NOTIFICATION].m_description  = TRANSLATE_ME("srr_group-notification-feature-name");
-    tmp[G_NOTIFICATION].m_restoreOrder = 6;
+    tmp[G_NOTIFICATION].m_restoreOrder = restoreOrder++;
 
     tmp[G_NOTIFICATION].m_fp.push_back(SrrFeaturePriorityStruct(F_NOTIFICATION_FEATURE_NAME, 1));
 
@@ -309,7 +314,7 @@ auto initSrrGroups = []() {
     tmp[G_VIRTUALIZATION_SETTINGS].m_id           = G_VIRTUALIZATION_SETTINGS;
     tmp[G_VIRTUALIZATION_SETTINGS].m_name         = G_VIRTUALIZATION_SETTINGS;
     tmp[G_VIRTUALIZATION_SETTINGS].m_description  = TRANSLATE_ME("srr_group-virtualization-settings");
-    tmp[G_VIRTUALIZATION_SETTINGS].m_restoreOrder = 7;
+    tmp[G_VIRTUALIZATION_SETTINGS].m_restoreOrder = restoreOrder++;
 
     tmp[G_VIRTUALIZATION_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUALIZATION_SETTINGS, 1));
 
@@ -317,7 +322,7 @@ auto initSrrGroups = []() {
     tmp[G_AI_SETTINGS].m_id           = G_AI_SETTINGS;
     tmp[G_AI_SETTINGS].m_name         = G_AI_SETTINGS;
     tmp[G_AI_SETTINGS].m_description  = TRANSLATE_ME("srr_group-ai-settings");
-    tmp[G_AI_SETTINGS].m_restoreOrder = 8;
+    tmp[G_AI_SETTINGS].m_restoreOrder = restoreOrder++;
 
     tmp[G_AI_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_AI_SETTINGS, 1));
 
@@ -325,24 +330,29 @@ auto initSrrGroups = []() {
     tmp[G_USER_SESSION_MANAGEMENT].m_id           = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_name         = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_description  = TRANSLATE_ME("srr_group-user-session-management");
-    tmp[G_USER_SESSION_MANAGEMENT].m_restoreOrder = 9;
+    tmp[G_USER_SESSION_MANAGEMENT].m_restoreOrder = restoreOrder++;
 
     tmp[G_USER_SESSION_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_USER_SESSION_MANAGEMENT_FEATURE_NAME, 1));
 
+    logDebug("initSrrGroups (size: {})", tmp.size());
     return tmp;
 };
 
+const std::map<std::string, SrrFeatureStruct> g_srrFeatureMap = initSrrFeatures();
+
 const std::map<std::string, SrrGroupStruct> g_srrGroupMap = initSrrGroups();
 
+// agents that implements SRR queue messaging
+// see SrrFeatureStruct.m_agent
 const std::map<const std::string, const std::string> g_agentToQueue = {
-        {ALERT_AGENT_NAME, ALERT_AGENT_MSG_QUEUE_NAME},
-        {ASSET_AGENT_NAME, ASSET_AGENT_MSG_QUEUE_NAME},
-        {AUTOMATIC_GROUPS_NAME, AUTOMATIC_GROUPS_QUEUE_NAME},
-        {CONFIG_AGENT_NAME, CONFIG_MSG_QUEUE_NAME},
-        {EMC4J_AGENT_NAME, EMC4J_MSG_QUEUE_NAME},
-        {RSYSLOG_AGENT_NAME, RSYSLOG_AGENT_MSG_QUEUE_NAME},
-        {SECU_WALLET_AGENT_NAME, SECU_WALLET_MSG_QUEUE_NAME},
-        {USM_AGENT_NAME, USM_AGENT_MSG_QUEUE_NAME}
-    };
+    { ALERT_AGENT_NAME,       ALERT_AGENT_MSG_QUEUE_NAME },
+    { ASSET_AGENT_NAME,       ASSET_AGENT_MSG_QUEUE_NAME },
+    { AUTOMATIC_GROUPS_NAME,  AUTOMATIC_GROUPS_QUEUE_NAME },
+    { CONFIG_AGENT_NAME,      CONFIG_MSG_QUEUE_NAME },
+    { EMC4J_AGENT_NAME,       EMC4J_MSG_QUEUE_NAME },
+    { RSYSLOG_AGENT_NAME,     RSYSLOG_AGENT_MSG_QUEUE_NAME },
+    { SECU_WALLET_AGENT_NAME, SECU_WALLET_MSG_QUEUE_NAME },
+    { USM_AGENT_NAME,         USM_AGENT_MSG_QUEUE_NAME },
+};
 
 } // namespace srr

@@ -27,8 +27,10 @@
 #include <fty_common.h>
 #include <iomanip>
 #include <openssl/sha.h>
+#include <fty_log.h>
 
 namespace srr {
+
 std::string evalSha256(const std::string& data)
 {
     unsigned char result[SHA256_DIGEST_LENGTH];
@@ -56,6 +58,10 @@ void evalDataIntegrity(Group& group)
     const std::string data = dto::srr::serializeJson(tmpSi, false);
 
     group.m_data_integrity = evalSha256(data);
+
+    logDebug("evalDataIntegrity group: {}", group.m_group_name);
+    logDebug("evalDataIntegrity data: {}", data);
+    logDebug("evalDataIntegrity sha: {}", group.m_data_integrity);
 }
 
 bool checkDataIntegrity(const Group& group)

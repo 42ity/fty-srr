@@ -50,19 +50,16 @@ private:
 
     std::set<std::string> m_supportedVersions;
 
-    int m_sendTimeout;
+    int m_sendTimeout_s; // sec.
 
     void init();
-    // void buildMapAssociation();
-    bool isVerstionCompatible(const std::string& version);
 
     // SRR methods
-    dto::srr::SaveResponse saveFeature(
-        const dto::srr::FeatureName& featureName, const std::string& passphrase, const std::string& sessionToken);
-    dto::srr::RestoreResponse restoreFeature(
-        const dto::srr::FeatureName& featureName, const dto::srr::RestoreQuery& query);
+    dto::srr::SaveResponse saveFeature(const dto::srr::FeatureName& featureName, const std::string& passphrase, const std::string& sessionToken);
+    dto::srr::RestoreResponse restoreFeature(const dto::srr::FeatureName& featureName, const dto::srr::RestoreQuery& query);
     dto::srr::ResetResponse resetFeature(const dto::srr::FeatureName& featureName);
-    bool                    rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase);
+
+    bool rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase);
 };
 
 } // namespace srr
