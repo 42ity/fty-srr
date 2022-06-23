@@ -28,15 +28,17 @@
 #include "helpers/data_integrity.h"
 #include "helpers/passPhrase.h"
 #include "helpers/utils.h"
-#include <chrono>
-#include <cstdlib>
-#include <fty-lib-certificate.h>
+
 #include <fty_common.h>
 #include <fty_common_mlm.h>
 #include <fty_common_mlm_pool.h>
+#include <fty-lib-certificate.h>
+#include <pack/serialization.h>
+
+#include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <numeric>
-#include <pack/serialization.h>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -67,8 +69,8 @@ SrrWorker::SrrWorker(messagebus::MessageBus& msgBus, const std::map<std::string,
 void SrrWorker::init()
 {
     try {
-        m_srrVersion  = m_parameters.at(SRR_VERSION_KEY);
-        m_sendTimeout = std::stoi(m_parameters.at(REQUEST_TIMEOUT_KEY)) / 1000;
+        m_srrVersion    = m_parameters.at(SRR_VERSION_KEY);
+        m_sendTimeout_s = std::stoi(m_parameters.at(REQUEST_TIMEOUT_KEY)) / 1000; //sec.
     } catch (const std::exception& ex) {
         throw SrrException(ex.what());
     }
@@ -77,7 +79,7 @@ void SrrWorker::init()
 dto::srr::SaveResponse SrrWorker::saveFeature(
     const dto::srr::FeatureName& featureName, const std::string& passphrase, const std::string& sessionToken)
 {
-    dto::srr::SaveResponse response;
+    logInfo("saveFeature {}", featureName);
 
     std::string agentNameDest;
     std::string queueNameDest;
@@ -86,43 +88,49 @@ dto::srr::SaveResponse SrrWorker::saveFeature(
         agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
         queueNameDest = g_agentToQueue.at(agentNameDest);
     } catch (std::exception& ex) {
-        log_error("Feature %s not found", featureName.c_str());
+        logError("Feature {} not found", featureName);
         throw SrrSaveFailed("Feature " + featureName + " not found");
     }
 
-    log_debug("Request save of feature %s to agent %s", featureName.c_str(), agentNameDest.c_str());
+    logDebug("Request save of feature {} to agent {}/{}", featureName, agentNameDest, queueNameDest);
 
     dto::srr::Query saveQuery = dto::srr::createSaveQuery({featureName}, passphrase, sessionToken);
-
     dto::UserData data;
     data << saveQuery;
+
     // Send message to agent
     messagebus::Message message;
     try {
         message = sendRequest(m_msgBus, data, "save", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest);
     } catch (SrrException& ex) {
+        logError("Request save of feature {} by agent {}/{} has failed (e: {})", featureName, agentNameDest, queueNameDest, ex.what());
         throw(SrrSaveFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
-    log_debug("Save done by agent %s", agentNameDest.c_str());
+
+    logDebug("Request save of {} done by agent {}", featureName, agentNameDest);
 
     dto::srr::Response featureResponse;
     message.userData() >> featureResponse;
+    dto::srr::SaveResponse response;
+    response = featureResponse.save();
 
     // check all features in the map of the response. If one failed, the save operation fails
-    for (const auto& f : featureResponse.save().map_features_data()) {
+    for (const auto& f : response.map_features_data()) {
         if (f.second.status().status() != Status::SUCCESS) {
+            logError("Save of feature {} failed", featureName);
             throw(SrrSaveFailed("Save failed for feature " + featureName));
         }
     }
 
-    response = featureResponse.save();
-
+    logInfo("saveFeature {} completed", featureName);
     return response;
 }
 
 dto::srr::RestoreResponse SrrWorker::restoreFeature(
     const dto::srr::FeatureName& featureName, const dto::srr::RestoreQuery& query)
 {
+    logInfo("restoreFeature {}", featureName);
+
     const std::string agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
     const std::string queueNameDest = g_agentToQueue.at(agentNameDest);
 
@@ -136,18 +144,20 @@ dto::srr::RestoreResponse SrrWorker::restoreFeature(
     messagebus::Message message;
     try {
         message = sendRequest(
-            m_msgBus, data, "restore", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout);
+            m_msgBus, data, "restore", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
     } catch (SrrException& ex) {
         throw(SrrRestoreFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
 
-    Response response;
-    message.userData() >> response;
+    Response featureResponse;
+    message.userData() >> featureResponse;
+    dto::srr::RestoreResponse response;
+    response = featureResponse.restore();
 
     // restore procedure failed -> rollback
     // check all features in the map of the response. If one failed, the save operation fails
     bool restoreOk = true;
-    for (const auto& f : response.restore().map_features_status()) {
+    for (const auto& f : response.map_features_status()) {
         if (f.second.status() != Status::SUCCESS) {
             restoreOk = false;
         }
@@ -157,11 +167,14 @@ dto::srr::RestoreResponse SrrWorker::restoreFeature(
         throw SrrRestoreFailed("Restore procedure failed for feature " + featureName);
     }
 
-    return response.restore();
+    logInfo("restoreFeature {} completed", featureName);
+    return response;
 }
 
 dto::srr::ResetResponse SrrWorker::resetFeature(const dto::srr::FeatureName& featureName)
 {
+    logInfo("resetFeature {}", featureName);
+
     const std::string agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
     const std::string queueNameDest = g_agentToQueue.at(agentNameDest);
 
@@ -177,16 +190,18 @@ dto::srr::ResetResponse SrrWorker::resetFeature(const dto::srr::FeatureName& fea
     messagebus::Message message;
     try {
         message = sendRequest(
-            m_msgBus, data, "reset", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout);
+            m_msgBus, data, "reset", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
     } catch (SrrException& ex) {
         throw(SrrResetFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
 
-    Response response;
-    message.userData() >> response;
+    Response featureResponse;
+    message.userData() >> featureResponse;
+    dto::srr::ResetResponse response;
+    response = featureResponse.reset();
 
     bool resetOk = true;
-    for (const auto& f : response.reset().map_features_status()) {
+    for (const auto& f : response.map_features_status()) {
         if (f.second.status() != Status::SUCCESS) {
             resetOk = false;
         }
@@ -195,14 +210,15 @@ dto::srr::ResetResponse SrrWorker::resetFeature(const dto::srr::FeatureName& fea
         throw SrrResetFailed("Reset procedure failed for feature " + featureName);
     }
 
-    return response.reset();
+    logInfo("resetFeature {} completed", featureName);
+    return response;
 }
 
 bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase)
 {
-    bool restart = false;
+    logInfo("Features roll back...");
 
-    log_debug("Starting features roll back...");
+    bool restart = false;
 
     std::map<std::string, FeatureAndStatus> rollbackMap(
         rollbackSaveResponse.map_features_data().begin(), rollbackSaveResponse.map_features_data().end());
@@ -257,17 +273,16 @@ bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, con
         std::this_thread::sleep_for(std::chrono::seconds(FEATURE_RESTORE_DELAY_SEC));
     }
 
-    log_debug("Roll back completed");
-
+    logInfo("Roll back completed");
     return restart;
 }
 
 // UI interface
 dto::UserData SrrWorker::getGroupList()
 {
-    SrrListResponse srrListResp;
+    logInfo("SRR group list request");
 
-    log_debug("SRR group list request");
+    SrrListResponse srrListResp;
 
     srrListResp.m_version                = m_srrVersion;
     srrListResp.m_passphrase_description = srr::getPassphraseFormatMessage();
@@ -286,7 +301,6 @@ dto::UserData SrrWorker::getGroupList()
             const std::string& featureId = featureAndPriority.m_feature;
 
             FeatureInfo featureInfo;
-
             featureInfo.m_name        = featureId;
             featureInfo.m_description = g_srrFeatureMap.at(featureId).m_description;
 
@@ -302,15 +316,15 @@ dto::UserData SrrWorker::getGroupList()
     dto::UserData response;
     response.push_back(dto::srr::serializeJson(si));
 
+    logInfo("SRR group list request completed");
     return response;
 }
 
 dto::UserData SrrWorker::requestSave(const std::string& json)
 {
+    logInfo("SRR save request");
+
     SrrSaveResponse srrSaveResp;
-
-    log_debug("SRR save request");
-
     srrSaveResp.m_version = m_srrVersion;
     srrSaveResp.m_status  = statusToString(Status::FAILED);
 
@@ -363,7 +377,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                             savedGroups[groupId].m_features.push_back(f);
                         }
                     }
-                } catch (std::exception& e) {
+                } catch (const std::exception& e) {
                     allGroupsSaved = false;
                     log_error("Error while saving group %s: %s. Will not be included in the payload", groupId.c_str(),
                         e.what());
@@ -399,20 +413,18 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
         }
     } catch (const std::exception& e) {
         srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
-        ;
         log_error(srrSaveResp.m_error.c_str());
     }
 
-    dto::UserData response;
-
     cxxtools::SerializationInfo responseSi;
     responseSi <<= srrSaveResp;
-
     std::string jsonResp = serializeJson(responseSi);
 
+    dto::UserData response;
     response.push_back(srrSaveResp.m_status);
     response.push_back(jsonResp);
 
+    logInfo("SRR save request completetd (status: {})", srrSaveResp.m_status);
     return response;
 }
 
@@ -420,7 +432,7 @@ static std::string zmsg_popstring(zmsg_t* resp)
 {
     char* popstr = zmsg_popstr(resp);
     // copies the null-terminated character sequence (C-string) pointed by popstr
-    std::string string_rv = popstr;
+    std::string string_rv = popstr ? popstr : "";
     zstr_free(&popstr);
     return string_rv;
 }
@@ -438,22 +450,23 @@ static bool getLicenseCapabilities()
     zmsg_addstr(req, "configurability");
 
     zmsg_t* resp = client->requestreply("etn-licensing", "licensing", 5, &req);
+    zmsg_destroy(&req);
     if (!resp) {
-        log_error("fty-srr: client->requestreply (timeout = '5') returned NULL");
+        log_error("fty-srr: client->requestreply etn-licensing (timeout = '5') returned NULL");
         return false;
     }
 
     std::string command = zmsg_popstring(resp);
     if (command != "CAPABILITIES") {
         zmsg_destroy(&resp);
-        log_debug("fty-srr: Unknown command received");
+        log_debug("fty-srr: Unknown command received from etn-licensing (%s)", command.c_str());
         return false;
     }
 
     std::string code = zmsg_popstring(resp);
     if (code != "OK") {
         zmsg_destroy(&resp);
-        log_debug("fty-srr: %", code.c_str());
+        log_debug("fty-srr: recv '%s' from etn-licensing", code.c_str());
         return false;
     }
 
@@ -469,10 +482,10 @@ static bool getLicenseCapabilities()
 
 dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 {
+    logInfo("SRR restore request");
+
     const bool IMPVAL_3680_HOTFIX{true}; // 2.4.0, see also IPMVAL-3668
     bool restart = false;
-
-    log_debug("SRR restore request");
 
     SrrRestoreResponse srrRestoreResp;
 
@@ -497,7 +510,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
         log_info("Restore request (version: %s, force: %s)", srrRestoreReq.m_version.c_str(), (force ? "true" : "false"));
 
-        if (srrRestoreReq.m_version == "1.0") {
+        if (IS_VERSION_1(srrRestoreReq.m_version))
+        {
             const auto& features = srrRestoreReq.m_data_ptr->getSrrFeatures();
 
             bool allFeaturesRestored = true;
@@ -517,8 +531,9 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                 restoreStatus.m_name = featureName;
 
                 if (IMPVAL_3680_HOTFIX) {
-                    // WA missing m_description, m_name is used as a string key
-                    restoreStatus.m_name.insert(0, "srr_");
+                    // WA missing m_description, m_name is used as a translation key
+                    if (restoreStatus.m_name.find(SRR_PREFIX_TRANSLATE_KEY) != 0)
+                        restoreStatus.m_name.insert(0, SRR_PREFIX_TRANSLATE_KEY);
                 }
 
                 // save feature to perform a rollback in case of error
@@ -581,7 +596,9 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
             } else {
                 srrRestoreResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
             }
-        } else if (srrRestoreReq.m_version == "2.0" || srrRestoreReq.m_version == "2.1") {
+        }
+        else if (IS_VERSION_2(srrRestoreReq.m_version))
+        {
             std::list<std::string> groupsIntegrityCheckFailed; // stores groups for which integrity check failed
 
             std::shared_ptr<SrrRestoreRequestDataV2> dataPtr =
@@ -641,8 +658,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     RestoreStatus restoreStatus;
                     restoreStatus.m_name   = groupId;
                     restoreStatus.m_status = statusToString(Status::FAILED);
-                    restoreStatus.m_error =
-                        TRANSLATE_ME("Group %s is not supported. Will not be restored", groupId.c_str());
+                    restoreStatus.m_error  = TRANSLATE_ME("Group %s is not supported. Will not be restored", groupId.c_str());
 
                     srrRestoreResp.m_status_list.push_back(restoreStatus);
 
@@ -673,27 +689,28 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                             request.set_passpharse(srrRestoreReq.m_passphrase);
                             request.set_session_token(srrRestoreReq.m_sessionToken);
                             request.mutable_map_features_data()->insert({featureName, dtoFeature});
-                        } catch (const std::out_of_range& e) {
-                            // missing feature, check if it required in restore payload version
+                        }
+                        catch (const std::out_of_range& e) {
+                            // missing feature, check if it is required in restore payload version
                             const auto requiredIn = g_srrFeatureMap.at(featureName).m_requiredIn;
-                            if (auto found = std::find(requiredIn.begin(), requiredIn.end(), srrRestoreReq.m_version);
-                                found != requiredIn.end()) {
-                                log_error("Feature %s is required in version %s", featureName.c_str(),
-                                    srrRestoreReq.m_version);
+                            auto found = std::find(requiredIn.begin(), requiredIn.end(), srrRestoreReq.m_version);
+                            if (found != requiredIn.end()) {
+                                log_error("Feature %s is required in version %s", featureName.c_str(), srrRestoreReq.m_version.c_str());
                                 throw std::runtime_error(
                                     "Feature " + featureName + " is required in version " + srrRestoreReq.m_version);
                             }
-                        } catch (const std::exception& e) {
+                        }
+                        catch (const std::exception& e) {
                             throw std::runtime_error(e.what());
                         }
                     }
-                } // if one feature is missing, set the error for the whole group and skip the group
+                }
                 catch (std::out_of_range& ex) {
+                    // if one feature is missing, set the error for the whole group and skip the group
                     RestoreStatus restoreStatus;
                     restoreStatus.m_name   = groupId;
                     restoreStatus.m_status = statusToString(Status::FAILED);
-                    restoreStatus.m_error =
-                        TRANSLATE_ME("Group %s cannot be restored. Missing features", groupId.c_str());
+                    restoreStatus.m_error  = TRANSLATE_ME("Group %s cannot be restored. Missing features", groupId.c_str());
 
                     srrRestoreResp.m_status_list.push_back(restoreStatus);
 
@@ -737,8 +754,9 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                 restoreStatus.m_status = statusToString(Status::SUCCESS);
 
                 if (IMPVAL_3680_HOTFIX) {
-                    // WA missing m_description, m_name is used as a string key
-                    restoreStatus.m_name.insert(0, "srr_");
+                    // WA missing m_description, m_name is used as a translation key
+                    if (restoreStatus.m_name.find(SRR_PREFIX_TRANSLATE_KEY) != 0)
+                        restoreStatus.m_name.insert(0, SRR_PREFIX_TRANSLATE_KEY);
                 }
 
                 // restore features in order
@@ -784,7 +802,9 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
             } else {
                 srrRestoreResp.m_status = statusToString(Status::PARTIAL_SUCCESS);
             }
-        } else {
+        }
+        else
+        {
             throw SrrInvalidVersion();
         }
     } catch (const SrrIntegrityCheckFailed& e) {
@@ -808,7 +828,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     response.push_back(jsonResp);
 
     if (restart) {
-        if (m_parameters.at(ENABLE_REBOOT_KEY) == "true") {
+        if (m_parameters.at(SRR_ENABLE_REBOOT_KEY) == "true") {
             std::thread restartThread(restartBiosService, SRR_RESTART_DELAY_SEC);
             restartThread.detach();
         } else {
@@ -816,18 +836,15 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         }
     }
 
+    logInfo("SRR restore request completed (status: {})", srrRestoreResp.m_status);
     return response;
 }
 
 dto::UserData SrrWorker::requestReset(const std::string& /* json */)
 {
-    log_debug("SRR reset request");
-    throw SrrException("Not implemented yet!");
-}
+    logInfo("SRR reset request");
 
-bool SrrWorker::isVerstionCompatible(const std::string& version)
-{
-    return m_supportedVersions.find(version) != m_supportedVersions.end();
+    throw SrrException("Not implemented yet!");
 }
 
 } // namespace srr

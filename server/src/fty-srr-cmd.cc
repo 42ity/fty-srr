@@ -22,15 +22,17 @@
 #include "dto/request.h"
 #include "dto/response.h"
 #include "helpers/utilsReauth.h"
-#include <cstdio>
-#include <cxxtools/serializationinfo.h>
-#include <fstream>
+
 #include <fty/command-line.h>
 #include <fty/string-utils.h>
 #include <fty_common.h>
 #include <fty_common_dto.h>
 #include <fty_common_messagebus.h>
 #include <fty_log.h>
+
+#include <cxxtools/serializationinfo.h>
+#include <cstdio>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -40,9 +42,8 @@
 #define AGENT_NAME                     "fty-srr-cmd"
 #define AGENT_NAME_REQUEST_DESTINATION "fty-srr-ui"
 #define MSG_QUEUE_NAME                 "ETN.Q.IPMCORE.SRR.UI"
-#define DEFAULT_TIME_OUT               3600
+#define DEFAULT_TIME_OUT               (20 * 60) //sec
 #define SESSION_TOKEN_ENV_VAR          "USM_BEARER"
-
 
 using namespace dto::srr;
 
@@ -56,6 +57,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
     os << *it;
     return os;
 }
+
 // Utils
 dto::UserData sendRequest(const std::string& action, const dto::UserData& userData);
 
@@ -83,8 +85,8 @@ int main(int argc, char** argv)
     std::string fileName;
     std::string groups;
     std::string passphrase;
-    std::string passwd{};
-    std::string sessionToken{};
+    std::string passwd;
+    std::string sessionToken;
 
     if (std::getenv(SESSION_TOKEN_ENV_VAR)) {
         sessionToken = std::getenv(SESSION_TOKEN_ENV_VAR);
@@ -160,7 +162,8 @@ int main(int argc, char** argv)
             std::cerr << "### - Password for reauthentication is required with restore operation" << std::endl;
             std::cout << cmd.help() << std::endl;
             return EXIT_FAILURE;
-        } else if(!srr::utils::isPasswordValidated(passwd)) {
+        }
+        if(!srr::utils::isPasswordValidated(passwd)) {
             std::cerr << "### - Wrong password, please retry" << std::endl;
             return EXIT_FAILURE;
         }
@@ -183,7 +186,7 @@ int main(int argc, char** argv)
     } else if(operation == "reset") {
         opReset();
     } else {
-        std::cout << "### - Unknown operation" << std::endl;
+        std::cout << "### - Unknown operation (" << operation << ")" << std::endl;
         std::cout << std::endl;
         std::cout << cmd.help() << std::endl;
         return EXIT_FAILURE;
@@ -196,6 +199,7 @@ dto::UserData sendRequest (const std::string &action,
                            const dto::UserData &userData)
 {
     log_debug ("sendRequest <%s> action", action.c_str());
+
     // Client id
     std::string clientId = messagebus::getClientId (AGENT_NAME);
     std::unique_ptr<messagebus::MessageBus> requester (
@@ -227,15 +231,12 @@ std::vector<std::string> opList() {
         // Send request
         dto::UserData respData = sendRequest ("list", reqData);
         if (respData.empty ()) {
-            throw std::runtime_error (
-              "Impossible to get the list of features");
+            throw std::runtime_error ("Impossible to get the list of features");
         }
-
-        srr::SrrListResponse resp;
 
         cxxtools::SerializationInfo si;
         JSON::readFromString(respData.front(), si);
-
+        srr::SrrListResponse resp;
         si >>= resp;
 
         std::cout << "### Groups available:" << std::endl;
@@ -312,16 +313,18 @@ void opRestore(const std::string& passphrase, const std::string& sessionToken, s
     siJson.getMember("version") >>= req.m_version;
     siJson.getMember("checksum") >>= req.m_checksum;
 
-    if(req.m_version == "1.0") {
+    if (IS_VERSION_1(req.m_version)) {
         srr::SrrRestoreRequestDataV1 reqData;
         siJson.getMember("data") >>= reqData.m_data;
         req.m_data_ptr = std::shared_ptr<srr::SrrRestoreRequestData>(new srr::SrrRestoreRequestDataV1(reqData));
-    } else if(req.m_version == "2.0" || req.m_version == "2.1") {
+    }
+    else if (IS_VERSION_2(req.m_version)) {
         srr::SrrRestoreRequestDataV2 reqData;
         siJson.getMember("data") >>= reqData.m_data;
         req.m_data_ptr = std::shared_ptr<srr::SrrRestoreRequestData>(new srr::SrrRestoreRequestDataV2(reqData));
-    } else {
-        std::cerr << "### - Invalid SRR version" << std::endl;
+    }
+    else {
+        std::cerr << "### - Invalid SRR version (" << req.m_version << ")" << std::endl;
         return;
     }
 

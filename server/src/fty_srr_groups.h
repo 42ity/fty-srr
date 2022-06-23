@@ -27,43 +27,91 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace srr {
+
 std::string  getGroupFromFeature(const std::string& featureName);
 unsigned int getPriority(const std::string& featureName);
 
-typedef struct SrrFeatureStruct
+struct SrrFeatureStruct
 {
     std::string m_id;
     std::string m_name;
     std::string m_description;
-
     std::string m_agent;
-
     std::list<std::string> m_requiredIn;
 
     bool m_restart;
     bool m_reset;
-} SrrFeatureStruct;
 
-typedef struct SrrFeaturePriorityStruct
+    //dump dbg
+    std::string str() const
+    {
+        std::ostringstream s;
+        s << "id(" << m_id << ")"
+          << ", name(" << m_name << ")"
+          << ", description(" << m_description << ")"
+          << ", agent(" << m_agent << ")";
+
+        s << ", requiredIn(";
+        std::string sep;
+        for (auto& it : m_requiredIn)
+            { s << sep << it; sep = ", "; }
+        s << ")";
+
+        return s.str();
+    }
+};
+
+struct SrrFeaturePriorityStruct
 {
-    SrrFeaturePriorityStruct(const std::string& f, unsigned int p)
-        : m_feature(f)
-        , m_priority(p){};
-    std::string  m_feature;
-    unsigned int m_priority;
-} SrrFeaturePriorityStruct;
+    SrrFeaturePriorityStruct(const std::string& feature, unsigned int priority)
+        : m_feature(feature)
+        , m_priority(priority)
+    {};
 
-typedef struct SrrGroupStruct
+    std::string  m_feature; // SrrFeatureStruct.m_id
+    unsigned int m_priority;
+
+    //dump dbg
+    std::string str() const
+    {
+        std::ostringstream s;
+        s << "feature(" << m_feature << ")"
+          << ", priority(" << m_priority << ")";
+
+        return s.str();
+    }
+};
+
+struct SrrGroupStruct
 {
     std::string m_id;
     std::string m_name;
     std::string m_description;
-    unsigned    m_restoreOrder; // define restore order (lower is restored before)
+    unsigned    m_restoreOrder; // define restore order (lower first)
 
     std::vector<SrrFeaturePriorityStruct> m_fp;
-} SrrGroupStruct;
+
+    //dump dbg
+    std::string str() const
+    {
+        std::ostringstream s;
+        s << "id(" << m_id << ")"
+          << ", name(" << m_name << ")"
+          << ", description(" << m_description << ")"
+          << ", restoreOrder(" << m_restoreOrder << ")";
+
+        s << ", fp(";
+        std::string sep;
+        for (auto& it : m_fp)
+            { s << sep << it.str(); sep = ", "; }
+        s << ")";
+
+        return s.str();
+    }
+};
 
 extern const std::map<std::string, SrrFeatureStruct> g_srrFeatureMap;
 

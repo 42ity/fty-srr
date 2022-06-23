@@ -19,20 +19,31 @@
     =========================================================================
 */
 
-#ifndef FTY_SRR_H_H_INCLUDED
-#define FTY_SRR_H_H_INCLUDED
+#pragma once
+
+#include <set>
+#include <string>
 
 //  SRR agent configuration
 constexpr auto REQUEST_TIMEOUT_KEY   = "requestTimeOut";
 constexpr auto AGENT_NAME_KEY        = "agentName";
-constexpr auto AGENT_NAME            = "fty-srr";
 constexpr auto ENDPOINT_KEY          = "endPoint";
-constexpr auto DEFAULT_ENDPOINT      = "ipc://@/malamute";
-constexpr auto DEFAULT_LOG_CONFIG    = "/etc/fty/ftylog.cfg";
 constexpr auto SRR_QUEUE_NAME_KEY    = "queueName";
-constexpr auto SRR_MSG_QUEUE_NAME    = "ETN.Q.IPMCORE.SRR";
-constexpr auto ENABLE_REBOOT_KEY     = "enableReboot";
-constexpr auto ENABLE_REBOOT_DEFAULT = "true";
+constexpr auto SRR_VERSION_KEY       = "version";
+constexpr auto SRR_ENABLE_REBOOT_KEY = "enableReboot";
+
+// SRR agent conf. defaults
+constexpr auto REQUEST_TIMEOUT_DEFAULT   = "600000"; //ms
+constexpr auto AGENT_NAME                = "fty-srr";
+constexpr auto DEFAULT_ENDPOINT          = "ipc://@/malamute";
+constexpr auto SRR_MSG_QUEUE_NAME        = "ETN.Q.IPMCORE.SRR";
+constexpr auto SRR_ACTIVE_VERSION        = "2.1";
+constexpr auto SRR_ENABLE_REBOOT_DEFAULT = "true";
+constexpr auto SRR_PREFIX_TRANSLATE_KEY  = "srr_";
+
+//set of all released versions
+//see SRR_ACTIVE_VERSION IS_VERSION_1 IS_VERSION_2
+const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1"})};
 
 // AGENTS AND QUEUES
 // Config agent definition
@@ -91,9 +102,3 @@ constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME = "user-session-management
 constexpr auto F_VIRTUAL_ASSETS                       = "virtual-assets";
 constexpr auto F_VIRTUALIZATION_SETTINGS              = "virtualization-settings";
 constexpr auto F_AI_SETTINGS                          = "ai-settings";
-// Common definition
-constexpr auto SRR_VERSION_KEY          = "version";
-constexpr auto ACTIVE_VERSION           = "2.1";
-constexpr auto SRR_PREFIX_TRANSLATE_KEY = "srr_";
-
-#endif
