@@ -27,8 +27,8 @@
 
 //see SRR_VERSION_ALL SRR_ACTIVE_VERSION
 //std::string version, X.Y format (major/minor)
-#define IS_VERSION_1(version) (!version.empty() && (version[0] == '1'))
-#define IS_VERSION_2(version) (!version.empty() && (version[0] == '2'))
+#define IS_VERSION_1(version) (version.find("1.") == 0)
+#define IS_VERSION_2(version) (version.find("2.") == 0)
 
 namespace srr {
 // si save request fields
