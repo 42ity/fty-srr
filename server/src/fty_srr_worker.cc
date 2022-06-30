@@ -71,6 +71,7 @@ void SrrWorker::init()
     try {
         m_srrVersion    = m_parameters.at(SRR_VERSION_KEY);
         m_sendTimeout_s = std::stoi(m_parameters.at(REQUEST_TIMEOUT_KEY)) / 1000; //sec.
+        logDebug("srrVersion: {}, sendTimeout: {} sec", m_srrVersion, m_sendTimeout_s);
     } catch (const std::exception& ex) {
         throw SrrException(ex.what());
     }
@@ -348,13 +349,13 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
             // save all the features for each required group
             for (const auto& groupId : srrSaveReq.m_group_list) {
                 log_debug("Saving features from group %s ", groupId.c_str());
+
                 srr::SrrGroupStruct group;
                 try {
                     group = g_srrGroupMap.at(groupId);
                 } catch (std::out_of_range& /* ex */) {
                     allGroupsSaved = false;
                     log_error("Group %s not found", groupId.c_str());
-
                     // do not save features from the current group, as it would be incomplete
                     continue;
                 }
@@ -362,6 +363,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 try {
                     for (const auto& entry : group.m_fp) {
                         const auto& featureName = entry.m_feature;
+                        log_debug("Saving feature %s of group %s ", featureName.c_str(), groupId.c_str());
 
                         SaveResponse saveResp =
                             saveFeature(featureName, srrSaveReq.m_passphrase, srrSaveReq.m_sessionToken);
@@ -378,10 +380,11 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                         }
                     }
                 } catch (const std::exception& e) {
-                    allGroupsSaved = false;
-                    log_error("Error while saving group %s: %s. Will not be included in the payload", groupId.c_str(),
-                        e.what());
+                    log_error("Error saving group %s (e: %s). It will be excluded from the payload",
+                        groupId.c_str(), e.what());
+
                     // delete the current group, as it would be incomplete
+                    allGroupsSaved = false;
                     savedGroups.erase(groupId);
                     continue;
                 }

@@ -37,13 +37,13 @@ constexpr auto REQUEST_TIMEOUT_DEFAULT   = "600000"; //ms
 constexpr auto AGENT_NAME                = "fty-srr";
 constexpr auto DEFAULT_ENDPOINT          = "ipc://@/malamute";
 constexpr auto SRR_MSG_QUEUE_NAME        = "ETN.Q.IPMCORE.SRR";
-constexpr auto SRR_ACTIVE_VERSION        = "2.1";
+constexpr auto SRR_ACTIVE_VERSION        = "2.2";
 constexpr auto SRR_ENABLE_REBOOT_DEFAULT = "true";
 constexpr auto SRR_PREFIX_TRANSLATE_KEY  = "srr_";
 
 //set of all released versions
 //see SRR_ACTIVE_VERSION IS_VERSION_1 IS_VERSION_2
-const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1"})};
+const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2"})};
 
 // AGENTS AND QUEUES
 // Config agent definition
@@ -93,8 +93,8 @@ constexpr auto F_DISCOVERY                            = "discovery";
 constexpr auto F_MASS_MANAGEMENT                      = "etn-mass-management";
 constexpr auto F_MONITORING_FEATURE_NAME              = "monitoring";
 constexpr auto F_NETWORK                              = "network";
-constexpr auto F_NETWORK_AGENT_SETTINGS               = "network-agent-settings";
 constexpr auto F_NETWORK_HOST_NAME                    = "network-host-name";
+constexpr auto F_NETWORK_AGENT_SETTINGS               = "network-agent-settings";
 constexpr auto F_NOTIFICATION_FEATURE_NAME            = "notification";
 constexpr auto F_RSYSLOG_FEATURE_NAME                 = "rsyslog";
 constexpr auto F_SECURITY_WALLET                      = "security-wallet";
