@@ -109,6 +109,13 @@ dto::srr::SaveResponse SrrWorker::saveFeature(
     }
 
     logDebug("Request save of {} done by agent {}", featureName, agentNameDest);
+    logDebug("response frames: {}", message.userData().size());
+
+    if (ftylog_getInstance()->isLogDebug()) { //dump response frames
+        int i = 0;
+        for (auto& s : message.userData())
+            { logDebug("frame #{}: {}", i, s); i++; }
+    }
 
     dto::srr::Response featureResponse;
     message.userData() >> featureResponse;
@@ -118,7 +125,7 @@ dto::srr::SaveResponse SrrWorker::saveFeature(
     // check all features in the map of the response. If one failed, the save operation fails
     for (const auto& f : response.map_features_data()) {
         if (f.second.status().status() != Status::SUCCESS) {
-            logError("Save of feature {} failed", featureName);
+            logError("Save of feature {} failed (status: {})", featureName, statusToString(f.second.status().status()));
             throw(SrrSaveFailed("Save failed for feature " + featureName));
         }
     }
@@ -242,7 +249,7 @@ bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, con
             try {
                 resetFeature(*revIt);
             } catch (SrrResetFailed& ex) {
-                log_warning(ex.what());
+                log_warning("%s", ex.what());
             }
         }
     }
@@ -427,7 +434,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
     response.push_back(srrSaveResp.m_status);
     response.push_back(jsonResp);
 
-    logInfo("SRR save request completetd (status: {})", srrSaveResp.m_status);
+    logInfo("SRR save request completed (status: {})", srrSaveResp.m_status);
     return response;
 }
 

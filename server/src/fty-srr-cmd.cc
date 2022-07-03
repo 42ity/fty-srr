@@ -42,7 +42,7 @@
 #define AGENT_NAME                     "fty-srr-cmd"
 #define AGENT_NAME_REQUEST_DESTINATION "fty-srr-ui"
 #define MSG_QUEUE_NAME                 "ETN.Q.IPMCORE.SRR.UI"
-#define DEFAULT_TIME_OUT               (20 * 60) //sec
+#define DEFAULT_TIME_OUT               (30 * 60) //sec
 #define SESSION_TOKEN_ENV_VAR          "USM_BEARER"
 
 using namespace dto::srr;
@@ -198,12 +198,12 @@ int main(int argc, char** argv)
 dto::UserData sendRequest (const std::string &action,
                            const dto::UserData &userData)
 {
-    log_debug ("sendRequest <%s> action", action.c_str());
+    log_info ("sendRequest <%s> action to <%s>", action.c_str(), AGENT_NAME_REQUEST_DESTINATION);
 
     // Client id
     std::string clientId = messagebus::getClientId (AGENT_NAME);
-    std::unique_ptr<messagebus::MessageBus> requester (
-      messagebus::MlmMessageBus (END_POINT, clientId));
+    std::unique_ptr<messagebus::MessageBus> requester(messagebus::MlmMessageBus(END_POINT, clientId));
+
     requester->connect ();
 
     // Build message
@@ -211,13 +211,12 @@ dto::UserData sendRequest (const std::string &action,
     msg.userData () = userData;
     msg.metaData ().emplace (messagebus::Message::SUBJECT, action);
     msg.metaData ().emplace (messagebus::Message::FROM, clientId);
-    msg.metaData ().emplace (messagebus::Message::TO,
-                             AGENT_NAME_REQUEST_DESTINATION);
-    msg.metaData ().emplace (messagebus::Message::CORRELATION_ID,
-                             messagebus::generateUuid ());
+    msg.metaData ().emplace (messagebus::Message::TO, AGENT_NAME_REQUEST_DESTINATION);
+    msg.metaData ().emplace (messagebus::Message::CORRELATION_ID, messagebus::generateUuid ());
+
     // Send request
-    messagebus::Message resp =
-      requester->request (MSG_QUEUE_NAME, msg, DEFAULT_TIME_OUT);
+    messagebus::Message resp = requester->request(MSG_QUEUE_NAME, msg, DEFAULT_TIME_OUT);
+
     // Return the data response
     return resp.userData ();
 }

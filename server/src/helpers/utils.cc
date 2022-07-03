@@ -32,16 +32,17 @@ namespace srr {
 void restartBiosService(const unsigned restartDelay)
 {
     for (unsigned i = restartDelay; i > 0; i--) {
-        log_info("Rebooting in %d seconds...", i);
+        logInfo("Rebooting in {} seconds...", i);
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+    logInfo("Reboot");
 
-    log_info("Reboot");
     // write out buffer to disk
     sync();
-    int ret = std::system("sudo /usr/sbin/fty-srr-reboot.sh");
-    if (ret) {
-        log_error("failed to run reboot procedure");
+
+    int r = std::system("sudo /usr/sbin/fty-srr-reboot.sh");
+    if (r != 0) {
+        logError("failed to run reboot procedure (r: {})", r);
     }
 }
 
@@ -55,28 +56,20 @@ std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
             const std::string& agentName = g_srrFeatureMap.at(feature).m_agent;
             map[agentName].insert(feature);
         } catch (std::out_of_range&) {
-            log_warning("Feature %s not found", feature.c_str());
+            logWarn("Feature {} not found in g_srrFeatureMap", feature);
         }
     }
 
     return map;
 }
 
-/**
- * Send a response on the message bus.
- * @param msg
- * @param payload
- * @param subject
- */
+/// Send a request to agentNameDest on queueNameDest with action as subject
 messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserData& userData,
     const std::string& action, const std::string& from, const std::string& queueNameDest,
-    const std::string& agentNameDest, int timeout)
+    const std::string& agentNameDest, int timeout_s)
 {
-    log_debug("Send message from %s to %s:%s with action %s", from.c_str(), agentNameDest.c_str(),
-        queueNameDest.c_str(), action.c_str());
-    // for(const auto& msg : userData) {
-    //     log_debug("data:\n%s\n", msg.c_str());
-    // }
+    logDebug("Send '{}' request to {}/{} (from: {}, timeout: {} sec.)",
+        action, agentNameDest, queueNameDest, from, timeout_s);
 
     messagebus::Message resp;
     try {
@@ -86,19 +79,20 @@ messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserD
         req.metaData().emplace(messagebus::Message::FROM, from);
         req.metaData().emplace(messagebus::Message::TO, agentNameDest);
         req.metaData().emplace(messagebus::Message::CORRELATION_ID, messagebus::generateUuid());
-        resp = msgbus.request(queueNameDest, req, timeout);
-    } catch (messagebus::MessageBusException& ex) {
-        throw SrrException(ex.what());
+
+        resp = msgbus.request(queueNameDest, req, timeout_s);
+    } catch (messagebus::MessageBusException& e) {
+        logError("Send '{}' request to {}/{} failed (e: {})", action, agentNameDest, queueNameDest, e.what());
+        throw SrrException(e.what());
     } catch (...) {
-        throw SrrException("Unknown error on send response to the message bus");
+        logError("Send '{}' request to {}/{} failed", action, agentNameDest, queueNameDest);
+        throw SrrException("Unexpected error on send request");
     }
 
-    log_debug("Message received from %s with action %s", resp.metaData().at(messagebus::Message::FROM).c_str(),
-        resp.metaData().at(messagebus::Message::SUBJECT).c_str());
+    logDebug("Receive '{}' response from {}",
+        resp.metaData().at(messagebus::Message::SUBJECT).c_str(),
+        resp.metaData().at(messagebus::Message::FROM).c_str());
 
-    // for(const auto& msg : resp.userData()) {
-    //     log_debug("data:\n%s\n", msg.c_str());
-    // }
     return resp;
 }
 
