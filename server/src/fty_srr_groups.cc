@@ -236,17 +236,8 @@ static auto initSrrGroups = []() {
     std::map<std::string, SrrGroupStruct> tmp;
     unsigned int restoreOrder = 0;
 
-    // create groups
+    // assets group, create and add features
     tmp[G_ASSETS];
-    tmp[G_DISCOVERY];
-    tmp[G_MASS_MANAGEMENT];
-    tmp[G_MONITORING];
-    tmp[G_NETWORK];
-    tmp[G_NOTIFICATION];
-    tmp[G_VIRTUALIZATION_SETTINGS];
-    tmp[G_USER_SESSION_MANAGEMENT];
-
-    // add features to asset group
     tmp[G_ASSETS].m_id           = G_ASSETS;
     tmp[G_ASSETS].m_name         = G_ASSETS;
     tmp[G_ASSETS].m_description  = TRANSLATE_ME("srr_group-assets");
@@ -260,7 +251,8 @@ static auto initSrrGroups = []() {
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATION_SETTINGS, 6));
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIONS, 7));
 
-    // add features to discovery group
+    // discovery group, create &nd add features
+    tmp[G_DISCOVERY];
     tmp[G_DISCOVERY].m_id           = G_DISCOVERY;
     tmp[G_DISCOVERY].m_name         = G_DISCOVERY;
     tmp[G_DISCOVERY].m_description  = TRANSLATE_ME("srr_group-discovery");
@@ -268,7 +260,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_DISCOVERY].m_fp.push_back(SrrFeaturePriorityStruct(F_DISCOVERY, 1));
 
-    // add features to mass management group
+    // mass management group, create and add features
+    tmp[G_MASS_MANAGEMENT];
     tmp[G_MASS_MANAGEMENT].m_id           = G_MASS_MANAGEMENT;
     tmp[G_MASS_MANAGEMENT].m_name         = G_MASS_MANAGEMENT;
     tmp[G_MASS_MANAGEMENT].m_description  = TRANSLATE_ME("srr_group-mass-management");
@@ -276,7 +269,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_MASS_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_MASS_MANAGEMENT, 1));
 
-    // add features to monitoring feature group
+    // monitoring group, create and add features
+    tmp[G_MONITORING];
     tmp[G_MONITORING].m_id           = G_MONITORING;
     tmp[G_MONITORING].m_name         = G_MONITORING;
     tmp[G_MONITORING].m_description  = TRANSLATE_ME("srr_group-monitoring-feature-name");
@@ -284,7 +278,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_MONITORING].m_fp.push_back(SrrFeaturePriorityStruct(F_MONITORING_FEATURE_NAME, 1));
 
-    // add features to remote syslog feature group
+    // rsyslog group, create and add features
+    tmp[G_RSYSLOG];
     tmp[G_RSYSLOG].m_id           = G_RSYSLOG;
     tmp[G_RSYSLOG].m_name         = G_RSYSLOG;
     tmp[G_RSYSLOG].m_description  = TRANSLATE_ME("srr_group-remote-syslog");
@@ -292,7 +287,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_RSYSLOG].m_fp.push_back(SrrFeaturePriorityStruct(F_RSYSLOG_FEATURE_NAME, 1));
 
-    // add features to network group
+    // network group, create and add features
+    tmp[G_NETWORK];
     tmp[G_NETWORK].m_id           = G_NETWORK;
     tmp[G_NETWORK].m_name         = G_NETWORK;
     tmp[G_NETWORK].m_description  = TRANSLATE_ME("srr_group-network");
@@ -302,7 +298,8 @@ static auto initSrrGroups = []() {
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_HOST_NAME, 2));
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_AGENT_SETTINGS, 3));
 
-    // add features to notification feature group
+    // notification group, create and add features
+    tmp[G_NOTIFICATION];
     tmp[G_NOTIFICATION].m_id           = G_NOTIFICATION;
     tmp[G_NOTIFICATION].m_name         = G_NOTIFICATION;
     tmp[G_NOTIFICATION].m_description  = TRANSLATE_ME("srr_group-notification-feature-name");
@@ -310,7 +307,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_NOTIFICATION].m_fp.push_back(SrrFeaturePriorityStruct(F_NOTIFICATION_FEATURE_NAME, 1));
 
-    // add features to virtualization settings group
+    // virtualization settings group, create and add features
+    tmp[G_VIRTUALIZATION_SETTINGS];
     tmp[G_VIRTUALIZATION_SETTINGS].m_id           = G_VIRTUALIZATION_SETTINGS;
     tmp[G_VIRTUALIZATION_SETTINGS].m_name         = G_VIRTUALIZATION_SETTINGS;
     tmp[G_VIRTUALIZATION_SETTINGS].m_description  = TRANSLATE_ME("srr_group-virtualization-settings");
@@ -318,7 +316,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_VIRTUALIZATION_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUALIZATION_SETTINGS, 1));
 
-    // add features to ai settings group
+    // ai settings group, create and add features
+    tmp[G_AI_SETTINGS];
     tmp[G_AI_SETTINGS].m_id           = G_AI_SETTINGS;
     tmp[G_AI_SETTINGS].m_name         = G_AI_SETTINGS;
     tmp[G_AI_SETTINGS].m_description  = TRANSLATE_ME("srr_group-ai-settings");
@@ -326,7 +325,8 @@ static auto initSrrGroups = []() {
 
     tmp[G_AI_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_AI_SETTINGS, 1));
 
-    // add features to user session management group
+    // user session management group, create and add features
+    tmp[G_USER_SESSION_MANAGEMENT];
     tmp[G_USER_SESSION_MANAGEMENT].m_id           = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_name         = G_USER_SESSION_MANAGEMENT;
     tmp[G_USER_SESSION_MANAGEMENT].m_description  = TRANSLATE_ME("srr_group-user-session-management");
