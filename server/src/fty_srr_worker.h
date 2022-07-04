@@ -59,7 +59,7 @@ private:
     dto::srr::RestoreResponse restoreFeature(const dto::srr::FeatureName& featureName, const dto::srr::RestoreQuery& query);
     dto::srr::ResetResponse resetFeature(const dto::srr::FeatureName& featureName);
 
-    bool rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase);
+    bool rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase, const std::string& sessionToken);
 };
 
 } // namespace srr
