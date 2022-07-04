@@ -222,7 +222,7 @@ dto::srr::ResetResponse SrrWorker::resetFeature(const dto::srr::FeatureName& fea
     return response;
 }
 
-bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase)
+bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, const std::string& passphrase, const std::string& sessionToken)
 {
     logInfo("Features roll back...");
 
@@ -262,10 +262,11 @@ bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, con
 
         // Build restore query
         RestoreQuery restoreQuery;
+        restoreQuery.set_version(m_srrVersion);
+        restoreQuery.set_checksum(fty::encrypt(passphrase, passphrase));
+        restoreQuery.set_passpharse(passphrase);
+        restoreQuery.set_session_token(sessionToken);
 
-        *(restoreQuery.mutable_version())    = m_srrVersion;
-        *(restoreQuery.mutable_checksum())   = fty::encrypt(passphrase, passphrase);
-        *(restoreQuery.mutable_passpharse()) = passphrase;
         restoreQuery.mutable_map_features_data()->insert({featureName, featureData});
 
         // restore backup data
@@ -591,7 +592,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     srrRestoreResp.m_status_list.push_back(restoreStatus);
 
                     // start rollback
-                    restart = restart | rollback(rollbackSaveResponse, srrRestoreReq.m_passphrase);
+                    restart = restart | rollback(rollbackSaveResponse, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
 
                     continue;
                 }
@@ -800,7 +801,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
                 // if restore failed -> rollback
                 if (restoreFailed) {
-                    restart = restart | rollback(rollbackSaveResponse, srrRestoreReq.m_passphrase);
+                    restart = restart | rollback(rollbackSaveResponse, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
                 }
 
                 // push group status into restore response
