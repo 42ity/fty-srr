@@ -47,6 +47,8 @@ std::string evalSha256(const std::string& data)
 
 void evalDataIntegrity(Group& group)
 {
+    logDebug("evalDataIntegrity group: {}", group.m_group_name);
+
     // sort features by priority (order can change)
     std::sort(group.m_features.begin(), group.m_features.end(), [&](SrrFeature l, SrrFeature r) {
         return getPriority(l.m_feature_name) < getPriority(r.m_feature_name);
@@ -58,10 +60,6 @@ void evalDataIntegrity(Group& group)
     const std::string data = dto::srr::serializeJson(tmpSi, false);
 
     group.m_data_integrity = evalSha256(data);
-
-    logDebug("evalDataIntegrity group: {}", group.m_group_name);
-    logDebug("evalDataIntegrity data: {}", data);
-    logDebug("evalDataIntegrity sha: {}", group.m_data_integrity);
 }
 
 bool checkDataIntegrity(const Group& group)
