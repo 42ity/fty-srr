@@ -102,20 +102,22 @@ dto::srr::SaveResponse SrrWorker::saveFeature(
     // Send message to agent
     messagebus::Message message;
     try {
-        message = sendRequest(m_msgBus, data, "save", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest);
+        message = sendRequest(m_msgBus, data, "save", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
     } catch (SrrException& ex) {
         logError("Request save of feature {} by agent {}/{} has failed (e: {})", featureName, agentNameDest, queueNameDest, ex.what());
         throw(SrrSaveFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
 
     logDebug("Request save of {} done by agent {}", featureName, agentNameDest);
-    logDebug("response frames: {}", message.userData().size());
 
+/**
+    logDebug("response frames: {}", message.userData().size());
     if (ftylog_getInstance()->isLogDebug()) { //dump response frames
         int i = 0;
         for (auto& s : message.userData())
             { logDebug("frame #{}: {}", i, s); i++; }
     }
+**/
 
     dto::srr::Response featureResponse;
     message.userData() >> featureResponse;

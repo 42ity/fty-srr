@@ -90,8 +90,8 @@ messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserD
     }
 
     logDebug("Receive '{}' response from {}",
-        resp.metaData().at(messagebus::Message::SUBJECT).c_str(),
-        resp.metaData().at(messagebus::Message::FROM).c_str());
+        resp.metaData().at(messagebus::Message::SUBJECT),
+        resp.metaData().at(messagebus::Message::FROM));
 
     return resp;
 }
