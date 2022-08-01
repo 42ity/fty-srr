@@ -111,14 +111,23 @@ static auto initSrrFeatures = []() {
     tmp[F_AUTOMATIONS].m_restart     = true;
     tmp[F_AUTOMATIONS].m_reset       = true;
 
-    tmp[F_DISCOVERY];
-    tmp[F_DISCOVERY].m_id          = F_DISCOVERY;
-    tmp[F_DISCOVERY].m_name        = F_DISCOVERY;
-    tmp[F_DISCOVERY].m_description = TRANSLATE_ME("srr_discovery");
-    tmp[F_DISCOVERY].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_DISCOVERY].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
-    tmp[F_DISCOVERY].m_restart     = true;
-    tmp[F_DISCOVERY].m_reset       = false;
+    tmp[F_DISCOVERY_SETTINGS];
+    tmp[F_DISCOVERY_SETTINGS].m_id          = F_DISCOVERY_SETTINGS;
+    tmp[F_DISCOVERY_SETTINGS].m_name        = F_DISCOVERY_SETTINGS;
+    tmp[F_DISCOVERY_SETTINGS].m_description = TRANSLATE_ME("srr_discovery-settings");
+    tmp[F_DISCOVERY_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
+    tmp[F_DISCOVERY_SETTINGS].m_requiredIn  = {"2.2"};
+    tmp[F_DISCOVERY_SETTINGS].m_restart     = false;
+    tmp[F_DISCOVERY_SETTINGS].m_reset       = false;
+
+    tmp[F_DISCOVERY_AGENT_SETTINGS];
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_id          = F_DISCOVERY_AGENT_SETTINGS;
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_name        = F_DISCOVERY_AGENT_SETTINGS;
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_description = TRANSLATE_ME("srr_discovery-agent-settings");
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_requiredIn  = {"2.2"};
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_restart     = false;
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_reset       = false;
 
     tmp[F_MASS_MANAGEMENT];
     tmp[F_MASS_MANAGEMENT].m_id          = F_MASS_MANAGEMENT;
@@ -258,7 +267,8 @@ static auto initSrrGroups = []() {
     tmp[G_DISCOVERY].m_description  = TRANSLATE_ME("srr_group-discovery");
     tmp[G_DISCOVERY].m_restoreOrder = restoreOrder++;
 
-    tmp[G_DISCOVERY].m_fp.push_back(SrrFeaturePriorityStruct(F_DISCOVERY, 1));
+    tmp[G_DISCOVERY].m_fp.push_back(SrrFeaturePriorityStruct(F_DISCOVERY_SETTINGS, 1));
+    tmp[G_DISCOVERY].m_fp.push_back(SrrFeaturePriorityStruct(F_DISCOVERY_AGENT_SETTINGS, 2));
 
     // mass management group, create and add features
     tmp[G_MASS_MANAGEMENT];

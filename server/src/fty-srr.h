@@ -73,7 +73,7 @@ constexpr auto RSYSLOG_AGENT_MSG_QUEUE_NAME = "FTY.Q.SYSLOG.SRR";
 
 // GROUPS
 constexpr auto G_ASSETS                  = "group-assets";
-constexpr auto G_DISCOVERY               = "group-discovery";
+constexpr auto G_DISCOVERY               = "group-discovery-ng";
 constexpr auto G_MASS_MANAGEMENT         = "group-mass-management";
 constexpr auto G_MONITORING              = "group-monitoring-feature-name";
 constexpr auto G_NETWORK                 = "group-network";
@@ -89,7 +89,8 @@ constexpr auto F_ASSET_AGENT                          = "asset-agent";
 constexpr auto F_AUTOMATIC_GROUPS                     = "automatic-groups";
 constexpr auto F_AUTOMATION_SETTINGS                  = "automation-settings";
 constexpr auto F_AUTOMATIONS                          = "automations";
-constexpr auto F_DISCOVERY                            = "discovery";
+constexpr auto F_DISCOVERY_SETTINGS                   = "discovery-ng-settings";
+constexpr auto F_DISCOVERY_AGENT_SETTINGS             = "discovery-ng-agent-settings";
 constexpr auto F_MASS_MANAGEMENT                      = "etn-mass-management";
 constexpr auto F_MONITORING_FEATURE_NAME              = "monitoring";
 constexpr auto F_NETWORK                              = "network";
