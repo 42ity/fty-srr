@@ -126,7 +126,7 @@ static auto initSrrFeatures = []() {
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_description = TRANSLATE_ME("srr_discovery-agent-settings");
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_requiredIn  = {"2.2"};
-    tmp[F_DISCOVERY_AGENT_SETTINGS].m_restart     = false;
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_restart     = true;
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_reset       = false;
 
     tmp[F_MASS_MANAGEMENT];
