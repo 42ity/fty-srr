@@ -1,6 +1,7 @@
 {
     "srr_group-assets" : "Assets management",
     "srr_security-wallet" : "Security Wallet",
+    "srr_credential-asset-mapping" : "Credential asset mapping",
     "srr_asset-agent" : "Physical assets",
     "srr_automatic-groups" : "Automatic groups",
     "srr_virtual-assets" : "Virtual assets",

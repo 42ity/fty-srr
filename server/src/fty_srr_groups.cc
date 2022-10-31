@@ -71,7 +71,7 @@ static auto initSrrFeatures = []() {
     tmp[F_ALERT_AGENT].m_name        = F_ALERT_AGENT;
     tmp[F_ALERT_AGENT].m_description = TRANSLATE_ME("srr_alert-agent");
     tmp[F_ALERT_AGENT].m_agent       = ALERT_AGENT_NAME;
-    tmp[F_ALERT_AGENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_ALERT_AGENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_ALERT_AGENT].m_restart     = true;
     tmp[F_ALERT_AGENT].m_reset       = true;
 
@@ -80,7 +80,7 @@ static auto initSrrFeatures = []() {
     tmp[F_ASSET_AGENT].m_name        = F_ASSET_AGENT;
     tmp[F_ASSET_AGENT].m_description = TRANSLATE_ME("srr_asset-agent");
     tmp[F_ASSET_AGENT].m_agent       = ASSET_AGENT_NAME;
-    tmp[F_ASSET_AGENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_ASSET_AGENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_ASSET_AGENT].m_restart     = true;
     tmp[F_ASSET_AGENT].m_reset       = true;
 
@@ -89,7 +89,7 @@ static auto initSrrFeatures = []() {
     tmp[F_AUTOMATIC_GROUPS].m_name        = F_AUTOMATIC_GROUPS;
     tmp[F_AUTOMATIC_GROUPS].m_description = TRANSLATE_ME("srr_automatic-groups");
     tmp[F_AUTOMATIC_GROUPS].m_agent       = AUTOMATIC_GROUPS_NAME;
-    tmp[F_AUTOMATIC_GROUPS].m_requiredIn  = {"2.1", "2.2"};
+    tmp[F_AUTOMATIC_GROUPS].m_requiredIn  = {"2.1", "2.2", "2.3"};
     tmp[F_AUTOMATIC_GROUPS].m_restart     = true;
     tmp[F_AUTOMATIC_GROUPS].m_reset       = true;
 
@@ -98,7 +98,7 @@ static auto initSrrFeatures = []() {
     tmp[F_AUTOMATION_SETTINGS].m_name        = F_AUTOMATION_SETTINGS;
     tmp[F_AUTOMATION_SETTINGS].m_description = TRANSLATE_ME("srr_automation-settings");
     tmp[F_AUTOMATION_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_AUTOMATION_SETTINGS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_AUTOMATION_SETTINGS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_AUTOMATION_SETTINGS].m_restart     = true;
     tmp[F_AUTOMATION_SETTINGS].m_reset       = false;
 
@@ -107,7 +107,7 @@ static auto initSrrFeatures = []() {
     tmp[F_AUTOMATIONS].m_name        = F_AUTOMATIONS;
     tmp[F_AUTOMATIONS].m_description = TRANSLATE_ME("srr_automations");
     tmp[F_AUTOMATIONS].m_agent       = EMC4J_AGENT_NAME;
-    tmp[F_AUTOMATIONS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_AUTOMATIONS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_AUTOMATIONS].m_restart     = true;
     tmp[F_AUTOMATIONS].m_reset       = true;
 
@@ -116,7 +116,7 @@ static auto initSrrFeatures = []() {
     tmp[F_DISCOVERY_SETTINGS].m_name        = F_DISCOVERY_SETTINGS;
     tmp[F_DISCOVERY_SETTINGS].m_description = TRANSLATE_ME("srr_discovery-settings");
     tmp[F_DISCOVERY_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_DISCOVERY_SETTINGS].m_requiredIn  = {"2.2"};
+    tmp[F_DISCOVERY_SETTINGS].m_requiredIn  = {"2.2", "2.3"};
     tmp[F_DISCOVERY_SETTINGS].m_restart     = false;
     tmp[F_DISCOVERY_SETTINGS].m_reset       = false;
 
@@ -125,7 +125,7 @@ static auto initSrrFeatures = []() {
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_name        = F_DISCOVERY_AGENT_SETTINGS;
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_description = TRANSLATE_ME("srr_discovery-agent-settings");
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_DISCOVERY_AGENT_SETTINGS].m_requiredIn  = {"2.2"};
+    tmp[F_DISCOVERY_AGENT_SETTINGS].m_requiredIn  = {"2.2", "2.3"};
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_restart     = true;
     tmp[F_DISCOVERY_AGENT_SETTINGS].m_reset       = false;
 
@@ -134,7 +134,7 @@ static auto initSrrFeatures = []() {
     tmp[F_MASS_MANAGEMENT].m_name        = F_MASS_MANAGEMENT;
     tmp[F_MASS_MANAGEMENT].m_description = TRANSLATE_ME("srr_etn-mass-management");
     tmp[F_MASS_MANAGEMENT].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_MASS_MANAGEMENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_MASS_MANAGEMENT].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_MASS_MANAGEMENT].m_restart     = true;
     tmp[F_MASS_MANAGEMENT].m_reset       = false;
 
@@ -143,7 +143,7 @@ static auto initSrrFeatures = []() {
     tmp[F_MONITORING_FEATURE_NAME].m_name        = F_MONITORING_FEATURE_NAME;
     tmp[F_MONITORING_FEATURE_NAME].m_description = TRANSLATE_ME("srr_monitoring");
     tmp[F_MONITORING_FEATURE_NAME].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_MONITORING_FEATURE_NAME].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_MONITORING_FEATURE_NAME].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_MONITORING_FEATURE_NAME].m_restart     = true;
     tmp[F_MONITORING_FEATURE_NAME].m_reset       = false;
 
@@ -152,7 +152,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NETWORK].m_name        = F_NETWORK;
     tmp[F_NETWORK].m_description = TRANSLATE_ME("srr_network");
     tmp[F_NETWORK].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_NETWORK].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_NETWORK].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_NETWORK].m_restart     = true;
     tmp[F_NETWORK].m_reset       = false;
 
@@ -161,7 +161,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NETWORK_HOST_NAME].m_name        = F_NETWORK_HOST_NAME;
     tmp[F_NETWORK_HOST_NAME].m_description = TRANSLATE_ME("srr_network-host-name");
     tmp[F_NETWORK_HOST_NAME].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_NETWORK_HOST_NAME].m_requiredIn  = {"2.2"};
+    tmp[F_NETWORK_HOST_NAME].m_requiredIn  = {"2.2", "2.3"};
     tmp[F_NETWORK_HOST_NAME].m_restart     = true;
     tmp[F_NETWORK_HOST_NAME].m_reset       = false;
 
@@ -170,7 +170,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NETWORK_AGENT_SETTINGS].m_name        = F_NETWORK_AGENT_SETTINGS;
     tmp[F_NETWORK_AGENT_SETTINGS].m_description = TRANSLATE_ME("srr_network-agent-settings");
     tmp[F_NETWORK_AGENT_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_NETWORK_AGENT_SETTINGS].m_requiredIn  = {"2.2"};
+    tmp[F_NETWORK_AGENT_SETTINGS].m_requiredIn  = {"2.2", "2.3"};
     tmp[F_NETWORK_AGENT_SETTINGS].m_restart     = true;
     tmp[F_NETWORK_AGENT_SETTINGS].m_reset       = false;
 
@@ -179,7 +179,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NOTIFICATION_FEATURE_NAME].m_name        = F_NOTIFICATION_FEATURE_NAME;
     tmp[F_NOTIFICATION_FEATURE_NAME].m_description = TRANSLATE_ME("srr_notification");
     tmp[F_NOTIFICATION_FEATURE_NAME].m_agent       = CONFIG_AGENT_NAME;
-    tmp[F_NOTIFICATION_FEATURE_NAME].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_NOTIFICATION_FEATURE_NAME].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_NOTIFICATION_FEATURE_NAME].m_restart     = true;
     tmp[F_NOTIFICATION_FEATURE_NAME].m_reset       = false;
 
@@ -188,7 +188,7 @@ static auto initSrrFeatures = []() {
     tmp[F_RSYSLOG_FEATURE_NAME].m_name        = F_RSYSLOG_FEATURE_NAME;
     tmp[F_RSYSLOG_FEATURE_NAME].m_description = TRANSLATE_ME("srr_rsyslog");
     tmp[F_RSYSLOG_FEATURE_NAME].m_agent       = RSYSLOG_AGENT_NAME;
-    tmp[F_RSYSLOG_FEATURE_NAME].m_requiredIn  = {"2.1", "2.2"};
+    tmp[F_RSYSLOG_FEATURE_NAME].m_requiredIn  = {"2.1", "2.2", "2.3"};
     tmp[F_RSYSLOG_FEATURE_NAME].m_restart     = true;
     tmp[F_RSYSLOG_FEATURE_NAME].m_reset       = true;
 
@@ -197,16 +197,25 @@ static auto initSrrFeatures = []() {
     tmp[F_SECURITY_WALLET].m_name        = F_SECURITY_WALLET;
     tmp[F_SECURITY_WALLET].m_description = TRANSLATE_ME("srr_security-wallet");
     tmp[F_SECURITY_WALLET].m_agent       = SECU_WALLET_AGENT_NAME;
-    tmp[F_SECURITY_WALLET].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_SECURITY_WALLET].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_SECURITY_WALLET].m_restart     = true;
     tmp[F_SECURITY_WALLET].m_reset       = false;
+
+    tmp[F_SECURITY_WALLET_CAM];
+    tmp[F_SECURITY_WALLET_CAM].m_id          = F_SECURITY_WALLET_CAM;
+    tmp[F_SECURITY_WALLET_CAM].m_name        = F_SECURITY_WALLET_CAM;
+    tmp[F_SECURITY_WALLET_CAM].m_description = TRANSLATE_ME("srr_credential-asset-mapping");
+    tmp[F_SECURITY_WALLET_CAM].m_agent       = SECU_WALLET_CAM_AGENT_NAME;
+    tmp[F_SECURITY_WALLET_CAM].m_requiredIn  = {"2.3"};
+    tmp[F_SECURITY_WALLET_CAM].m_restart     = true;
+    tmp[F_SECURITY_WALLET_CAM].m_reset       = false;
 
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME];
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_id          = F_USER_SESSION_MANAGEMENT_FEATURE_NAME;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_name        = F_USER_SESSION_MANAGEMENT_FEATURE_NAME;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_description = TRANSLATE_ME("srr_user-session-management");
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_agent       = USM_AGENT_NAME;
-    tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_requiredIn  = {"2.1", "2.2"};
+    tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_requiredIn  = {"2.1", "2.2", "2.3"};
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_restart     = true;
     tmp[F_USER_SESSION_MANAGEMENT_FEATURE_NAME].m_reset       = false;
 
@@ -215,7 +224,7 @@ static auto initSrrFeatures = []() {
     tmp[F_VIRTUAL_ASSETS].m_name        = F_VIRTUAL_ASSETS;
     tmp[F_VIRTUAL_ASSETS].m_description = TRANSLATE_ME("srr_virtual-assets");
     tmp[F_VIRTUAL_ASSETS].m_agent       = EMC4J_AGENT_NAME;
-    tmp[F_VIRTUAL_ASSETS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2"};
+    tmp[F_VIRTUAL_ASSETS].m_requiredIn  = {"1.0", "2.0", "2.1", "2.2", "2.3"};
     tmp[F_VIRTUAL_ASSETS].m_restart     = true;
     tmp[F_VIRTUAL_ASSETS].m_reset       = true;
 
@@ -224,7 +233,7 @@ static auto initSrrFeatures = []() {
     tmp[F_VIRTUALIZATION_SETTINGS].m_name        = F_VIRTUALIZATION_SETTINGS;
     tmp[F_VIRTUALIZATION_SETTINGS].m_description = TRANSLATE_ME("srr_virtualization-settings");
     tmp[F_VIRTUALIZATION_SETTINGS].m_agent       = EMC4J_AGENT_NAME;
-    tmp[F_VIRTUALIZATION_SETTINGS].m_requiredIn  = {"2.1", "2.2"};
+    tmp[F_VIRTUALIZATION_SETTINGS].m_requiredIn  = {"2.1", "2.2", "2.3"};
     tmp[F_VIRTUALIZATION_SETTINGS].m_restart     = true;
     tmp[F_VIRTUALIZATION_SETTINGS].m_reset       = true;
 
@@ -233,7 +242,7 @@ static auto initSrrFeatures = []() {
     tmp[F_AI_SETTINGS].m_name        = F_AI_SETTINGS;
     tmp[F_AI_SETTINGS].m_description = TRANSLATE_ME("srr_ai-settings");
     tmp[F_AI_SETTINGS].m_agent       = EMC4J_AGENT_NAME;
-    tmp[F_AI_SETTINGS].m_requiredIn  = {"2.1", "2.2"};
+    tmp[F_AI_SETTINGS].m_requiredIn  = {"2.1", "2.2", "2.3"};
     tmp[F_AI_SETTINGS].m_restart     = true;
     tmp[F_AI_SETTINGS].m_reset       = true;
 
@@ -253,12 +262,13 @@ static auto initSrrGroups = []() {
     tmp[G_ASSETS].m_restoreOrder = restoreOrder++;
 
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_SECURITY_WALLET, 1));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_ASSET_AGENT, 2));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIC_GROUPS, 3));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUAL_ASSETS, 4));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_ALERT_AGENT, 5));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATION_SETTINGS, 6));
-    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIONS, 7));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_SECURITY_WALLET_CAM, 2));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_ASSET_AGENT, 3));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIC_GROUPS, 4));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_VIRTUAL_ASSETS, 5));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_ALERT_AGENT, 6));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATION_SETTINGS, 7));
+    tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIONS, 8));
 
     // discovery group, create &nd add features
     tmp[G_DISCOVERY];
@@ -355,14 +365,15 @@ const std::map<std::string, SrrGroupStruct> g_srrGroupMap = initSrrGroups();
 // agents that implements SRR queue messaging
 // see SrrFeatureStruct.m_agent
 const std::map<const std::string, const std::string> g_agentToQueue = {
-    { ALERT_AGENT_NAME,       ALERT_AGENT_MSG_QUEUE_NAME },
-    { ASSET_AGENT_NAME,       ASSET_AGENT_MSG_QUEUE_NAME },
-    { AUTOMATIC_GROUPS_NAME,  AUTOMATIC_GROUPS_QUEUE_NAME },
-    { CONFIG_AGENT_NAME,      CONFIG_MSG_QUEUE_NAME },
-    { EMC4J_AGENT_NAME,       EMC4J_MSG_QUEUE_NAME },
-    { RSYSLOG_AGENT_NAME,     RSYSLOG_AGENT_MSG_QUEUE_NAME },
-    { SECU_WALLET_AGENT_NAME, SECU_WALLET_MSG_QUEUE_NAME },
-    { USM_AGENT_NAME,         USM_AGENT_MSG_QUEUE_NAME },
+    { ALERT_AGENT_NAME,           ALERT_AGENT_MSG_QUEUE_NAME },
+    { ASSET_AGENT_NAME,           ASSET_AGENT_MSG_QUEUE_NAME },
+    { AUTOMATIC_GROUPS_NAME,      AUTOMATIC_GROUPS_QUEUE_NAME },
+    { CONFIG_AGENT_NAME,          CONFIG_MSG_QUEUE_NAME },
+    { EMC4J_AGENT_NAME,           EMC4J_MSG_QUEUE_NAME },
+    { RSYSLOG_AGENT_NAME,         RSYSLOG_AGENT_MSG_QUEUE_NAME },
+    { SECU_WALLET_AGENT_NAME,     SECU_WALLET_MSG_QUEUE_NAME },
+    { SECU_WALLET_CAM_AGENT_NAME, SECU_WALLET_CAM_MSG_QUEUE_NAME },
+    { USM_AGENT_NAME,             USM_AGENT_MSG_QUEUE_NAME },
 };
 
 } // namespace srr
