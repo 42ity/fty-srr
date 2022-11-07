@@ -174,6 +174,15 @@ static auto initSrrFeatures = []() {
     tmp[F_NETWORK_AGENT_SETTINGS].m_restart     = true;
     tmp[F_NETWORK_AGENT_SETTINGS].m_reset       = false;
 
+    tmp[F_NETWORK_PROXY];
+    tmp[F_NETWORK_PROXY].m_id          = F_NETWORK_PROXY;
+    tmp[F_NETWORK_PROXY].m_name        = F_NETWORK_PROXY;
+    tmp[F_NETWORK_PROXY].m_description = TRANSLATE_ME("srr_network-proxy");
+    tmp[F_NETWORK_PROXY].m_agent       = CONFIG_AGENT_NAME;
+    tmp[F_NETWORK_PROXY].m_requiredIn  = {"2.3"};
+    tmp[F_NETWORK_PROXY].m_restart     = true;
+    tmp[F_NETWORK_PROXY].m_reset       = false;
+
     tmp[F_NOTIFICATION_FEATURE_NAME];
     tmp[F_NOTIFICATION_FEATURE_NAME].m_id          = F_NOTIFICATION_FEATURE_NAME;
     tmp[F_NOTIFICATION_FEATURE_NAME].m_name        = F_NOTIFICATION_FEATURE_NAME;
@@ -317,6 +326,7 @@ static auto initSrrGroups = []() {
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK, 1));
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_HOST_NAME, 2));
     tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_AGENT_SETTINGS, 3));
+    tmp[G_NETWORK].m_fp.push_back(SrrFeaturePriorityStruct(F_NETWORK_PROXY, 4));
 
     // notification group, create and add features
     tmp[G_NOTIFICATION];
