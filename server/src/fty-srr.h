@@ -99,6 +99,7 @@ constexpr auto F_MONITORING_FEATURE_NAME              = "monitoring";
 constexpr auto F_NETWORK                              = "network";
 constexpr auto F_NETWORK_HOST_NAME                    = "network-host-name";
 constexpr auto F_NETWORK_AGENT_SETTINGS               = "network-agent-settings";
+constexpr auto F_NETWORK_PROXY                        = "network-proxy";
 constexpr auto F_NOTIFICATION_FEATURE_NAME            = "notification";
 constexpr auto F_RSYSLOG_FEATURE_NAME                 = "rsyslog";
 constexpr auto F_SECURITY_WALLET                      = "security-wallet";

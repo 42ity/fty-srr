@@ -42,8 +42,8 @@ struct SrrFeatureStruct
     std::string m_agent;
     std::list<std::string> m_requiredIn;
 
-    bool m_restart;
-    bool m_reset;
+    bool m_restart; // feature requires to restart after restore?
+    bool m_reset; // feature can reset?
 
     //dump dbg
     std::string str() const
@@ -52,7 +52,9 @@ struct SrrFeatureStruct
         s << "id(" << m_id << ")"
           << ", name(" << m_name << ")"
           << ", description(" << m_description << ")"
-          << ", agent(" << m_agent << ")";
+          << ", agent(" << m_agent << ")"
+          << ", restart(" << (m_restart ? "true" : "false") << ")"
+          << ", reset(" << (m_reset ? "true" : "false") << ")";
 
         s << ", requiredIn(";
         std::string sep;

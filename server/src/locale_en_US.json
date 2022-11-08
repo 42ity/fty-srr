@@ -19,6 +19,7 @@
     "srr_network" : "Network interfaces",
     "srr_network-host-name" : "Network hostname",
     "srr_network-agent-settings": "Network agent settings",
+    "srr_network-proxy": "Network proxy",
     "srr_group-notification-feature-name" : "Notification settings",
     "srr_notification" : "Email settings",
     "srr_group-user-session-management" : "Users and sessions settings",
