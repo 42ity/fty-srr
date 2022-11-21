@@ -25,10 +25,8 @@ etn_target(exe ${PROJECT_NAME}
         src/helpers/utils.h
         src/helpers/passPhrase.h
         src/helpers/passPhrase.cpp
-
     INCLUDE_DIRS
         src
-
     USES_PRIVATE
         czmq
         cxxtools
@@ -70,38 +68,3 @@ etn_target(exe ${PROJECT_NAME}-cmd
         protobuf
         czmq
 )
-
-##############################################################################################################
-
-set(res "resources")
-
-#install files
-
-# etc/<project-name>
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${res}/fty-srr.cfg
-  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/fty-srr/
-)
-
-# usr/sbin
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${res}/fty-srr-reboot.sh
-  PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ
-  DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR}/
-)
-
-# etc/sudoers.d
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${res}/sudoers.d/fty_20_srr
-  PERMISSIONS OWNER_READ GROUP_READ
-  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/sudoers.d/
-)
-
-# lib/systemd/system
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${res}/fty-srr.service.in ${PROJECT_BINARY_DIR}/fty-srr.service @ONLY)
-install(FILES
-  ${PROJECT_BINARY_DIR}/fty-srr.service
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/system/
-)
-
-##############################################################################################################

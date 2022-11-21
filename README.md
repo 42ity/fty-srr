@@ -41,7 +41,7 @@ Except standard server and malamute options, there are two other options:
 
 Agent reads environment variable BIOS_LOG_LEVEL, which sets verbosity level of the agent.
 
-## CLI (internal)
+## Command Line Interface
 
 ```bash
   Usage: fty-srr-cmd <list|save|restore|reset> [options]

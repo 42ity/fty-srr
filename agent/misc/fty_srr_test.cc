@@ -40,13 +40,8 @@
 #include <fty_common_rest_helpers.h>
 #include <fty_srr_dto.h>
 
-
-//functions
-void usage();
-void srrTest(const std::string& action);
-
 static std::string getSaveIpm2ConfigPayload()
-{   
+{
     cxxtools::SerializationInfo si;
     si.addMember("version") <<= "1.0";
     cxxtools::SerializationInfo& siFeaturesList = si.addMember("featureList");
@@ -55,7 +50,7 @@ static std::string getSaveIpm2ConfigPayload()
     cxxtools::SerializationInfo siTemp;
     siTemp.addMember("name") <<= "automation";
     siFeaturesList.addMember("") <<= siTemp;
-    
+
     return JSON::writeToString(si, false);
 }
 
@@ -76,7 +71,7 @@ static std::string getRestoreIpm2ConfigPayload()
     // Server 2
     cxxtools::SerializationInfo& siServer2 = siAutomationData.addMember("server-2");
     siServer2.addMember("timeout") <<= "8";
-    
+
     return JSON::writeToString(si, false);
 }
 
@@ -90,7 +85,7 @@ dto::UserData sendRequest(const std::string& subject, const dto::UserData& userD
 
         std::unique_ptr<messagebus::MessageBus> requester(messagebus::MlmMessageBus(DEFAULT_ENDPOINT /*END_POINT*/, clientId));
         requester->connect();
-        
+
         // Build message
         messagebus::Message msg;
         msg.userData() = userData;
@@ -122,7 +117,7 @@ static dto::srr::SrrFeaturesListDto getFeatureListManaged()
     // Send request
     dto::UserData respData = sendRequest(GET_ACTION, reqData);
     respData >> featuresListDto;
-    
+
     return featuresListDto;
 }
 
@@ -132,21 +127,84 @@ static std::string saveIpm2Configuration(const std::string& inputData)
     dto::UserData reqData;
     reqData << query;
     dto::UserData respData = sendRequest(SAVE_ACTION, reqData);
-    
+
     return respData.front();
 }
 
 static dto::srr::SrrRestoreDtoList restoreIpm2Configuration(const std::string& inputData)
 {
     dto::srr::SrrRestoreDtoList responseDto;
-    
+
     dto::srr::SrrQueryDto query(RESTORE_ACTION, inputData);
     dto::UserData reqData;
     reqData << query;
     dto::UserData respData = sendRequest(RESTORE_ACTION, reqData);
     respData >> responseDto;
-    
+
     return responseDto;
+}
+
+void usage()
+{
+    puts(AGENT_NAME " [options] ...");
+    puts("  -v|--verbose        verbose test output");
+    puts("  -h|--help           this information");
+    puts("  -g|--get            get feature list");
+    puts("  -s|--save           Save");
+    puts("  -r|--restore        Restore");
+}
+
+void srrTest(const std::string& action)
+{
+    log_info(AGENT_NAME " test starting");
+
+    if (action.compare("get") == 0)
+    {
+        dto::srr::SrrFeaturesListDto featuresListDto = getFeatureListManaged();
+        // Build the json result
+        for (const auto& feature : featuresListDto.featuresList)
+        {
+            log_debug("  ** feature: '%s'", feature.c_str());
+        }
+    }
+    else if (action.compare("save") == 0)
+    {
+        const std::string inputPayload = getSaveIpm2ConfigPayload();
+        std::vector<dto::srr::SrrSaveDto> responseDto;
+        std::string ipm2Config = saveIpm2Configuration(inputPayload);
+        log_debug("Ipm2 configuration: '%s'", ipm2Config.c_str());
+
+        cxxtools::SerializationInfo jsonResp;
+        JSON::readFromString (ipm2Config, jsonResp);
+
+        log_debug("Ipm2 configuration: '%s'", ipm2Config.c_str());
+    }
+    else if (action.compare("restore") == 0)
+    {
+        const std::string inputData = getRestoreIpm2ConfigPayload();
+        dto::srr::SrrRestoreDtoList responseDto = restoreIpm2Configuration(inputData);
+
+        // Output serialization
+        cxxtools::SerializationInfo siResp;
+        siResp.addMember("status") <<= responseDto.status;
+        cxxtools::SerializationInfo siStatusList;
+        siStatusList.setCategory(cxxtools::SerializationInfo::Category::Array);
+
+        for (const auto& resp : responseDto.responseList)
+        {
+            cxxtools::SerializationInfo siTemp;
+
+            siTemp.addMember("name") <<= resp.name;
+            siTemp.addMember("status") <<= resp.status;
+            siTemp.addMember("error") <<= resp.error;
+            siStatusList.addMember("") <<= siTemp;
+        }
+
+        siResp.addMember("") <<= siStatusList;
+
+        std::string returnString = JSON::writeToString (siResp, false);
+        log_debug("Restore response: %s", returnString.c_str());
+    }
 }
 
 int main(int argc, char *argv [])
@@ -156,7 +214,7 @@ int main(int argc, char *argv [])
 
     try
     {
-        ftylog_setInstance(AGENT_NAME, "");
+        ftylog_setInstance(AGENT_NAME, FTY_COMMON_LOGGING_DEFAULT_CFG);
 
         int argn;
         char *config_file = NULL;
@@ -184,13 +242,16 @@ int main(int argc, char *argv [])
                     config_file = param;
                 }
                 ++argn;
-            } else if (streq(argv [argn], "--get") || streq(argv [argn], "-g"))
+            }
+            else if (streq(argv [argn], "--get") || streq(argv [argn], "-g"))
             {
                 action = "get";
-            } else if (streq(argv [argn], "--save") || streq(argv [argn], "-s"))
+            }
+            else if (streq(argv [argn], "--save") || streq(argv [argn], "-s"))
             {
                 action = "save";
-            } else if (streq(argv [argn], "--restore") || streq(argv [argn], "-r"))
+            }
+            else if (streq(argv [argn], "--restore") || streq(argv [argn], "-r"))
             {
                 action = "restore";
             }
@@ -198,87 +259,24 @@ int main(int argc, char *argv [])
 
         if (verbose)
         {
-            ftylog_setVeboseMode(ftylog_getInstance());
+            ftylog_setVerboseMode(ftylog_getInstance());
             log_trace("Verbose mode OK");
         }
 
         log_info(AGENT_NAME " starting");
 
         srrTest(action);
-        return EXIT_SUCCESS;
 
-    } 
-    catch (std::exception & e)
+        return EXIT_SUCCESS;
+    }
+    catch (const std::exception & e)
     {
         log_error(AGENT_NAME ": Error '%s'", e.what());
-        exit(EXIT_FAILURE);
-    } catch (...)
+    }
+    catch (...)
     {
         log_error(AGENT_NAME ": Unknown error");
-        exit(EXIT_FAILURE);
     }
-}
 
-void usage()
-{
-    puts(AGENT_NAME " [options] ...");
-    puts("  -v|--verbose        verbose test output");
-    puts("  -h|--help           this information");
-    puts("  -g|--get            get feature list");
-    puts("  -s|--save           Save");
-    puts("  -r|--restore        Restore");
-}
-
-void srrTest(const std::string& action)
-{
-    log_info(AGENT_NAME " test starting");
-
-    if (action.compare("get") == 0)
-    {
-        dto::srr::SrrFeaturesListDto featuresListDto = getFeatureListManaged();
-        // Build the json result
-        for (const auto& feature : featuresListDto.featuresList)
-        {
-            log_debug("  ** feature: '%s'", feature.c_str());
-        }
-    } 
-    else if (action.compare("save") == 0)
-    {
-        const std::string inputPayload = getSaveIpm2ConfigPayload();
-        std::vector<dto::srr::SrrSaveDto> responseDto;
-        std::string ipm2Config = saveIpm2Configuration(inputPayload);
-        log_debug("Ipm2 configuration: '%s'", ipm2Config.c_str());
-        
-        cxxtools::SerializationInfo jsonResp;
-        JSON::readFromString (ipm2Config, jsonResp);
-
-        log_debug("Ipm2 configuration: '%s'", ipm2Config.c_str());
-    }
-    else if (action.compare("restore") == 0)
-    {
-        const std::string inputData = getRestoreIpm2ConfigPayload();
-        dto::srr::SrrRestoreDtoList responseDto = restoreIpm2Configuration(inputData);
-        
-        // Output serialization
-        cxxtools::SerializationInfo siResp;
-        siResp.addMember("status") <<= responseDto.status;
-        cxxtools::SerializationInfo siStatusList;
-        siStatusList.setCategory(cxxtools::SerializationInfo::Category::Array);
-        
-        for (const auto& resp : responseDto.responseList)
-        {
-            cxxtools::SerializationInfo siTemp;
-            
-            siTemp.addMember("name") <<= resp.name;
-            siTemp.addMember("status") <<= resp.status;
-            siTemp.addMember("error") <<= resp.error;
-            siStatusList.addMember("") <<= siTemp;
-        }
-        
-        siResp.addMember("") <<= siStatusList;
-        
-        
-        std::string returnString = JSON::writeToString (siResp, false);
-        log_debug("Restore response: %s", returnString.c_str());
-    }
+    return EXIT_FAILURE;
 }

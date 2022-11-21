@@ -1,9 +1,6 @@
 # This file is an additional configuration file for "sudo",
 # which allows fty-srr daemon to run a custom reboot script (needed after
 # restore procedure)
-# Author(s): Mauro Guerrera <mauroguerrera@eaton.com>
-# Inspired by Iain "ibuclaw" examples from Ubuntu Forums (C) 2009:
-#    http://ubuntuforums.org/showthread.php?t=1132821
 #
 
 fty-srr    ALL = NOPASSWD: /usr/sbin/fty-srr-reboot.sh
