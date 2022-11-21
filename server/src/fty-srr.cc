@@ -33,12 +33,12 @@ volatile bool           g_exit = false;
 std::condition_variable g_cv;
 std::mutex              g_cvMutex;
 
-void usage()
+static void usage()
 {
-    puts((AGENT_NAME + std::string(" [options] ...")).c_str());
-    puts("  -v|--verbose        verbose test output");
-    puts("  -h|--help           this information");
-    puts("  -c|--config         path to configuration file");
+    printf("%s [options]\n", AGENT_NAME);
+    printf("  -h|--help           this information\n");
+    printf("  -v|--verbose        verbose test output\n");
+    printf("  -c|--config <path>  path to config file\n");
 }
 
 void sigHandler(int)
@@ -81,33 +81,36 @@ int main(int argc, char* argv[])
     // Set terminate pg handler
     std::set_terminate(terminateHandler);
 
-    ftylog_setInstance(AGENT_NAME, FTY_COMMON_LOGGING_DEFAULT_CFG);
-
     char* config_file = NULL;
     bool  verbose     = false;
 
     // Parse command line
     for (int argn = 1; argn < argc; argn++) {
-        char* param = NULL;
-        if (argn < argc - 1)
-            param = argv[argn + 1];
+        char* arg = argv[argn];
+        char* param = (argn < (argc - 1)) ? argv[argn + 1] : NULL;
 
-        if (streq(argv[argn], "--help") || streq(argv[argn], "-h")) {
+        if (streq(arg, "--help") || streq(arg, "-h")) {
             usage();
             return EXIT_SUCCESS;
         }
-        else if (streq(argv[argn], "--verbose") || streq(argv[argn], "-v")) {
+        else if (streq(arg, "--verbose") || streq(arg, "-v")) {
             verbose = true;
         }
-        else if (streq(argv[argn], "--config") || streq(argv[argn], "-c")) {
+        else if (streq(arg, "--config") || streq(arg, "-c")) {
             if (!param) {
-                logError("{}: {}: missing argument", AGENT_NAME, argv[argn]);
+                fprintf(stderr, "%s: missing <path> argument\n", arg);
                 return EXIT_FAILURE;
             }
             config_file = param;
-            ++argn;
+            argn++;
+        }
+        else {
+            fprintf(stderr, "%s: unknown argument\n", arg);
+            return EXIT_FAILURE;
         }
     }
+
+    ftylog_setInstance(AGENT_NAME, FTY_COMMON_LOGGING_DEFAULT_CFG);
 
     // Default parameters
     std::map<std::string, std::string> paramsConfig;

@@ -612,8 +612,6 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         }
         else if (IS_VERSION_2(srrRestoreReq.m_version))
         {
-            std::list<std::string> groupsIntegrityCheckFailed; // stores groups for which integrity check failed
-
             std::shared_ptr<SrrRestoreRequestDataV2> dataPtr =
                 std::dynamic_pointer_cast<SrrRestoreRequestDataV2>(srrRestoreReq.m_data_ptr);
             auto& groups = dataPtr->m_data;
@@ -640,6 +638,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
             }
 
             // data integrity check
+            std::list<std::string> groupsIntegrityCheckFailed; // groups where integrity check failed
             if (force) {
                 log_warning("Restoring with force option: data integrity check will be skipped");
             } else {
@@ -840,8 +839,11 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     response.push_back(srrRestoreResp.m_status);
     response.push_back(jsonResp);
 
+    logInfo("SRR restore request status: {}", srrRestoreResp.m_status);
+
     if (restart) {
         if (m_parameters.at(SRR_ENABLE_REBOOT_KEY) == "true") {
+            logInfo("Reboot required");
             std::thread restartThread(restartBiosService, SRR_RESTART_DELAY_SEC);
             restartThread.detach();
         } else {
@@ -849,7 +851,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         }
     }
 
-    logInfo("SRR restore request completed (status: {})", srrRestoreResp.m_status);
+    logInfo("SRR restore request done");
     return response;
 }
 

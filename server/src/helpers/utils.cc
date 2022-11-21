@@ -32,17 +32,16 @@ namespace srr {
 void restartBiosService(const unsigned restartDelay)
 {
     for (unsigned i = restartDelay; i > 0; i--) {
-        logInfo("Rebooting in {} seconds...", i);
+        std::cout << "Rebooting in " << i << "s..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    logInfo("Reboot");
 
-    // write out buffer to disk
-    sync();
+    std::cout << "Rebooting..." << std::endl;
 
-    int r = std::system("sudo /usr/sbin/fty-srr-reboot.sh");
+    const char* cmd = "sudo /usr/sbin/fty-srr-reboot.sh";
+    int r = std::system(cmd);
     if (r != 0) {
-        logError("failed to run reboot procedure (r: {})", r);
+        std::cerr << "Run '" << cmd << "' failed (r: " << r << ")" << std::endl;
     }
 }
 
