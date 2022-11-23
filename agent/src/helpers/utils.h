@@ -31,7 +31,12 @@ class MessageBus;
 } // namespace messagebus
 
 namespace srr {
+
+// reboot bios
 void restartBiosService(const unsigned restartDelay);
+
+// start/stop the certificate manager service
+void certmanager(bool start);
 
 std::map<std::string, std::set<dto::srr::FeatureName>> groupFeaturesByAgent(
     const std::list<dto::srr::FeatureName>& features);

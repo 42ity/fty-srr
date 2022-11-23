@@ -46,32 +46,29 @@ namespace srr
     {
         logInfo("processRequest '{}'", operation);
 
+        RequestType op = m_requestType.find(operation) != m_requestType.end()
+            ? m_requestType.at(operation)
+            : RequestType::REQ_UNKNOWN;
+
         dto::UserData response;
-
-        RequestType op = m_requestType.find(operation) != m_requestType.end() ? m_requestType.at(operation) : RequestType::REQ_UNKNOWN;
-
         switch(op)
         {
             case RequestType::REQ_LIST :
-                if(!listHandler) throw std::runtime_error("No list feature handler!");
+                if(!listHandler) throw std::runtime_error("No list handler!");
                 response = listHandler();
                 break;
-
             case RequestType::REQ_SAVE :
                 if(!saveHandler) throw std::runtime_error("No save handler!");
                 response = saveHandler(data.front());
                 break;
-
             case RequestType::REQ_RESTORE :
                 if(!restoreHandler) throw std::runtime_error("No restore handler!");
                 response = restoreHandler(data.front(), data.size() > 1);
                 break;
-
             case RequestType::REQ_RESET :
                 if(!resetHandler) throw std::runtime_error("No reset handler!");
                 response = resetHandler(data.front());
                 break;
-
             case RequestType::REQ_UNKNOWN:
             default:
                 throw std::runtime_error("Unknown query!");
@@ -193,7 +190,8 @@ namespace srr
 
             std::string subject = respMsg.metaData().at(messagebus::Message::SUBJECT);
             std::string to = respMsg.metaData().at(messagebus::Message::TO);
-            logInfo("sendResponse '{}' to '{}' success", subject, to);        }
+            logInfo("sendResponse '{}' to '{}' success", subject, to);
+        }
         catch (messagebus::MessageBusException& ex)
         {
             logError("sendResponse: MessageBusException: {}", ex.what());
