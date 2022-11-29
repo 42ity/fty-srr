@@ -1,0 +1,8 @@
+# This file is an additional configuration file for "sudo",
+# which allows fty-srr daemon:
+# - to run a custom reboot script (needed after restore procedure)
+# - to start/stop the certmanagd service
+#
+
+fty-srr    ALL = NOPASSWD: /usr/sbin/fty-srr-reboot.sh
+fty-srr    ALL = NOPASSWD: /bin/systemctl * certmanagd

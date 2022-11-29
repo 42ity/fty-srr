@@ -46,32 +46,29 @@ namespace srr
     {
         logInfo("processRequest '{}'", operation);
 
+        RequestType op = m_requestType.find(operation) != m_requestType.end()
+            ? m_requestType.at(operation)
+            : RequestType::REQ_UNKNOWN;
+
         dto::UserData response;
-
-        RequestType op = m_requestType.find(operation) != m_requestType.end() ? m_requestType.at(operation) : RequestType::REQ_UNKNOWN;
-
         switch(op)
         {
             case RequestType::REQ_LIST :
-                if(!listHandler) throw std::runtime_error("No list feature handler!");
+                if(!listHandler) throw std::runtime_error("No list handler!");
                 response = listHandler();
                 break;
-
             case RequestType::REQ_SAVE :
                 if(!saveHandler) throw std::runtime_error("No save handler!");
                 response = saveHandler(data.front());
                 break;
-
             case RequestType::REQ_RESTORE :
                 if(!restoreHandler) throw std::runtime_error("No restore handler!");
                 response = restoreHandler(data.front(), data.size() > 1);
                 break;
-
             case RequestType::REQ_RESET :
                 if(!resetHandler) throw std::runtime_error("No reset handler!");
                 response = resetHandler(data.front());
                 break;
-
             case RequestType::REQ_UNKNOWN:
             default:
                 throw std::runtime_error("Unknown query!");
@@ -97,7 +94,7 @@ namespace srr
      */
     void SrrManager::init()
     {
-        logDebug("init");
+        logInfo("initialization");
 
         try
         {
@@ -150,7 +147,7 @@ namespace srr
         catch (const std::exception& ex)
         {
             response.push_back(ex.what());
-            log_error(ex.what());
+            log_error("%s", ex.what());
         }
 
         sendUiResponse(msg, response);
@@ -168,7 +165,6 @@ namespace srr
 
         auto handler = std::bind(&SrrManager::uiMsgHandler, this, msg);
         std::thread t(handler);
-
         t.detach();
     }
 
@@ -179,7 +175,7 @@ namespace srr
      */
     void SrrManager::sendResponse(const messagebus::Message& msg, const dto::UserData& userData)
     {
-        logDebug("sendResponse");
+        logDebug("sendResponse...");
 
         try
         {
@@ -189,14 +185,21 @@ namespace srr
             respMsg.metaData().emplace(messagebus::Message::FROM, m_parameters.at(AGENT_NAME_KEY));
             respMsg.metaData().emplace(messagebus::Message::TO, msg.metaData().find(messagebus::Message::FROM)->second);
             respMsg.metaData().emplace(messagebus::Message::CORRELATION_ID, msg.metaData().find(messagebus::Message::CORRELATION_ID)->second);
+
             m_backEndBus->sendReply(msg.metaData().find(messagebus::Message::REPLY_TO)->second, respMsg);
+
+            std::string subject = respMsg.metaData().at(messagebus::Message::SUBJECT);
+            std::string to = respMsg.metaData().at(messagebus::Message::TO);
+            logInfo("sendResponse '{}' to '{}' success", subject, to);
         }
         catch (messagebus::MessageBusException& ex)
         {
+            logError("sendResponse: MessageBusException: {}", ex.what());
             throw SrrException(ex.what());
         }
         catch (...)
         {
+            logError("sendResponse: exception: {}", "unknown error");
             throw SrrException("Unknown error on send response to the message bus");
         }
     }
@@ -208,7 +211,7 @@ namespace srr
      */
     void SrrManager::sendUiResponse(const messagebus::Message& msg, const dto::UserData& userData)
     {
-        logDebug("sendUiResponse");
+        logDebug("sendUiResponse...");
 
         try
         {
@@ -218,14 +221,21 @@ namespace srr
             respMsg.metaData().emplace(messagebus::Message::FROM, m_parameters.at(AGENT_NAME_KEY));
             respMsg.metaData().emplace(messagebus::Message::TO, msg.metaData().find(messagebus::Message::FROM)->second);
             respMsg.metaData().emplace(messagebus::Message::CORRELATION_ID, msg.metaData().find(messagebus::Message::CORRELATION_ID)->second);
+
             m_uiBus->sendReply(msg.metaData().find(messagebus::Message::REPLY_TO)->second, respMsg);
+
+            std::string subject = respMsg.metaData().at(messagebus::Message::SUBJECT);
+            std::string to = respMsg.metaData().at(messagebus::Message::TO);
+            logInfo("sendUiResponse '{}' to '{}' success", subject, to);
         }
         catch (messagebus::MessageBusException& ex)
         {
+            logError("sendUiResponse: MessageBusException: {}", ex.what());
             throw SrrException(ex.what());
         }
         catch (...)
         {
+            logError("sendUiResponse: exception: {}", "unknown error");
             throw SrrException("Unknown error on send response to the message bus");
         }
     }

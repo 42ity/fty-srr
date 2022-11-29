@@ -163,10 +163,10 @@ int main(int argc, char** argv)
             std::cout << cmd.help() << std::endl;
             return EXIT_FAILURE;
         }
-        if(!srr::utils::isPasswordValidated(passwd)) {
-            std::cerr << "### - Wrong password, please retry" << std::endl;
-            return EXIT_FAILURE;
-        }
+        //if(!srr::utils::isPasswordValidated(passwd)) {
+        //    std::cerr << "### - Wrong password, please retry" << std::endl;
+        //    return EXIT_FAILURE;
+        //}
         std::ifstream inputFile;
         if(!fileName.empty()) {
             try{

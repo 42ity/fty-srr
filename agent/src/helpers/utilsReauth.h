@@ -1,4 +1,6 @@
 /*  =========================================================================
+    utilsReauth.h - class description
+
     Copyright (C) 2014 - 2020 Eaton
 
     This program is free software; you can redistribute it and/or modify
@@ -17,27 +19,13 @@
     =========================================================================
 */
 
-#include "helpers/utilsReauth.h"
-#include <cxxtools/base64codec.h>
-#include <iostream>
+#pragma once
 
+#include <string>
 
 namespace srr::utils {
-bool isPasswordValidated(const std::string& passwd)
-{
-    auto checkPasswd{"sudo -k; echo '" + passwd + "' | sudo -S test true 1>/dev/null 2>/dev/null"};
 
-    int  ret      = std::system(checkPasswd.c_str());
-    bool passwdOk = false;
+bool        isPasswordValidated(const std::string& passwd);
+std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd);
 
-    if (WEXITSTATUS(ret) == 0) {
-        passwdOk = true;
-    }
-    return passwdOk;
-}
-
-std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd)
-{
-    return cxxtools::Base64Codec::encode(sessionToken + ":" + passwd);
-}
 } // namespace srr::utils

@@ -2,9 +2,10 @@
 # In case of recovering a deployment from backups, this does not
 # restore EULA acceptance nor license. So still needs (for now)
 # to go through the standard wizard + EULA as a prerequisite.
-Description=fty-srr service: Save, Restore and Reset
+Description=@PROJECT_NAME@ service
 After=malamute.service network.target fty-license-accepted.target
 Requires=malamute.service network.target
+
 # Enable FLA... once, do not keep retrying if EULA is not accepted yet
 Wants=fty-license-accepted.target
 Requisite=fty-license-accepted.target
@@ -14,7 +15,7 @@ PartOf=bios.target
 Type=simple
 User=fty-srr
 Restart=always
-ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/fty-srr --config @CMAKE_INSTALL_FULL_SYSCONFDIR@/fty-srr/fty-srr.cfg
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/@PROJECT_NAME@ -c @CMAKE_INSTALL_FULL_SYSCONFDIR@/@PROJECT_NAME@/@PROJECT_NAME@.cfg
 
 [Install]
 WantedBy=bios.target

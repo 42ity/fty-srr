@@ -1,4 +1,4 @@
-#   fty-srr configuration
+#   @PROJECT_NAME@ settings
 
 server
     timeout = 600000    #   Client connection timeout, msec
@@ -7,10 +7,10 @@ server
     verbose = 0         #   Do verbose logging of activity?
 
 srr-msg-bus
-    endpoint = ipc://@/malamute             #   Malamute endpoint
-    address =  fty-srr                      #   Agent address
-    srrQueueName = ETN.Q.IPMCORE.SRR        # Srr queue name for all incoming request.
+    endpoint = ipc://@/malamute             # Malamute endpoint
+    address =  fty-srr                      # Agent address
+    srrQueueName = ETN.Q.IPMCORE.SRR        # queue name for all incoming request.
 
 srr
-    version = 2.3        # Srr version
+    version = 2.3        # current version
     enableReboot = true  # Enable/disable reboot after restore

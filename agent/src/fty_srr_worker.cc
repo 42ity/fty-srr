@@ -72,7 +72,8 @@ void SrrWorker::init()
         m_srrVersion    = m_parameters.at(SRR_VERSION_KEY);
         m_sendTimeout_s = std::stoi(m_parameters.at(REQUEST_TIMEOUT_KEY)) / 1000; //sec.
         logDebug("srrVersion: {}, sendTimeout: {} sec", m_srrVersion, m_sendTimeout_s);
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         throw SrrException(ex.what());
     }
 }
@@ -88,22 +89,27 @@ dto::srr::SaveResponse SrrWorker::saveFeature(
     try {
         agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
         queueNameDest = g_agentToQueue.at(agentNameDest);
-    } catch (std::exception& ex) {
+    }
+    catch (std::exception& ex) {
         logError("Feature {} not found", featureName);
         throw SrrSaveFailed("Feature " + featureName + " not found");
     }
 
     logDebug("Request save of feature {} to agent {}/{}", featureName, agentNameDest, queueNameDest);
 
-    dto::srr::Query saveQuery = dto::srr::createSaveQuery({featureName}, passphrase, sessionToken);
-    dto::UserData data;
-    data << saveQuery;
-
     // Send message to agent
     messagebus::Message message;
     try {
-        message = sendRequest(m_msgBus, data, "save", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
-    } catch (SrrException& ex) {
+        dto::srr::Query saveQuery;
+        saveQuery = dto::srr::createSaveQuery({featureName}, passphrase, sessionToken);
+
+        dto::UserData data;
+        data << saveQuery;
+
+        auto agentName = m_parameters.at(AGENT_NAME_KEY);
+        message = sendRequest(m_msgBus, data, "save", agentName, queueNameDest, agentNameDest, m_sendTimeout_s);
+    }
+    catch (SrrException& ex) {
         logError("Request save of feature {} by agent {}/{} has failed (e: {})", featureName, agentNameDest, queueNameDest, ex.what());
         throw(SrrSaveFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
@@ -144,18 +150,27 @@ dto::srr::RestoreResponse SrrWorker::restoreFeature(
     const std::string agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
     const std::string queueNameDest = g_agentToQueue.at(agentNameDest);
 
-    Query restoreQuery;
-    *(restoreQuery.mutable_restore()) = query;
     log_debug("Request restore of feature %s to agent %s ", featureName.c_str(), agentNameDest.c_str());
 
+    // IPMVAL-4505: restore exception on network hostname
+    // We must stop certificate manager to avoid cert rebuild and nginx restart
+    if (featureName == F_NETWORK_HOST_NAME) {
+        certmanager(false); // stop
+    }
+
     // Send message
-    dto::UserData data;
-    data << restoreQuery;
     messagebus::Message message;
     try {
-        message = sendRequest(
-            m_msgBus, data, "restore", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
-    } catch (SrrException& ex) {
+        Query restoreQuery;
+        *(restoreQuery.mutable_restore()) = query;
+
+        dto::UserData data;
+        data << restoreQuery;
+
+        auto agentName = m_parameters.at(AGENT_NAME_KEY);
+        message = sendRequest(m_msgBus, data, "restore", agentName, queueNameDest, agentNameDest, m_sendTimeout_s);
+    }
+    catch (SrrException& ex) {
         throw(SrrRestoreFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
 
@@ -164,8 +179,7 @@ dto::srr::RestoreResponse SrrWorker::restoreFeature(
     dto::srr::RestoreResponse response;
     response = featureResponse.restore();
 
-    // restore procedure failed -> rollback
-    // check all features in the map of the response. If one failed, the save operation fails
+    // check all features in the map of the response. If one failed, the restore operation fails
     bool restoreOk = true;
     for (const auto& f : response.map_features_status()) {
         if (f.second.status() != Status::SUCCESS) {
@@ -174,6 +188,11 @@ dto::srr::RestoreResponse SrrWorker::restoreFeature(
     }
 
     if (!restoreOk) {
+        // if restore network hostname failed, restart certificate manager
+        if (featureName == F_NETWORK_HOST_NAME) {
+            certmanager(true); // start
+        }
+
         throw SrrRestoreFailed("Restore procedure failed for feature " + featureName);
     }
 
@@ -190,18 +209,20 @@ dto::srr::ResetResponse SrrWorker::resetFeature(const dto::srr::FeatureName& fea
 
     log_debug("Request reset of feature %s to agent %s ", featureName.c_str(), agentNameDest.c_str());
 
-    Query       query;
-    ResetQuery& resetQuery          = *(query.mutable_reset());
-    *(resetQuery.mutable_version()) = m_srrVersion;
-    resetQuery.add_features(featureName);
-
-    dto::UserData data;
-    data << query;
     messagebus::Message message;
     try {
-        message = sendRequest(
-            m_msgBus, data, "reset", m_parameters.at(AGENT_NAME_KEY), queueNameDest, agentNameDest, m_sendTimeout_s);
-    } catch (SrrException& ex) {
+        Query       query;
+        ResetQuery& resetQuery          = *(query.mutable_reset());
+        *(resetQuery.mutable_version()) = m_srrVersion;
+        resetQuery.add_features(featureName);
+
+        dto::UserData data;
+        data << query;
+
+        auto agentName = m_parameters.at(AGENT_NAME_KEY);
+        message = sendRequest(m_msgBus, data, "reset", agentName, queueNameDest, agentNameDest, m_sendTimeout_s);
+    }
+    catch (SrrException& ex) {
         throw(SrrResetFailed("Request to agent " + agentNameDest + ":" + queueNameDest + " failed: " + ex.what()));
     }
 
@@ -250,17 +271,16 @@ bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, con
         if (g_srrFeatureMap.at(*revIt).m_reset) {
             try {
                 resetFeature(*revIt);
-            } catch (SrrResetFailed& ex) {
-                log_warning("%s", ex.what());
+            }
+            catch (SrrResetFailed& ex) {
+                log_warning("resetFeature: %s", ex.what());
             }
         }
     }
 
-    for (const auto& featureName : featuresToRestore) {
+    for (const auto& featureName : featuresToRestore)
+    {
         const dto::srr::Feature& featureData = rollbackMap.at(featureName).feature();
-
-        const std::string agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
-        const std::string queueNameDest = g_agentToQueue.at(agentNameDest);
 
         // Build restore query
         RestoreQuery restoreQuery;
@@ -272,14 +292,19 @@ bool SrrWorker::rollback(const dto::srr::SaveResponse& rollbackSaveResponse, con
         restoreQuery.mutable_map_features_data()->insert({featureName, featureData});
 
         // restore backup data
+        const std::string agentNameDest = g_srrFeatureMap.at(featureName).m_agent;
         log_debug("Rollback configuration of %s by agent %s ", featureName.c_str(), agentNameDest.c_str());
+
         try {
             restoreFeature(featureName, restoreQuery);
-        } catch (SrrRestoreFailed& ex) {
+        }
+        catch (SrrRestoreFailed& ex) {
             log_error("Feature %s is unrecoverable. May be in undefined state", featureName.c_str());
         }
+
         log_debug("%s rolled back by: %s ", featureName.c_str(), agentNameDest.c_str());
         restart = restart | g_srrFeatureMap.at(featureName).m_restart;
+
         // wait to sync feature restore
         std::this_thread::sleep_for(std::chrono::seconds(FEATURE_RESTORE_DELAY_SEC));
     }
@@ -363,7 +388,8 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 srr::SrrGroupStruct group;
                 try {
                     group = g_srrGroupMap.at(groupId);
-                } catch (std::out_of_range& /* ex */) {
+                }
+                catch (std::out_of_range& /* ex */) {
                     allGroupsSaved = false;
                     log_error("Group %s not found", groupId.c_str());
                     // do not save features from the current group, as it would be incomplete
@@ -389,7 +415,8 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                             savedGroups[groupId].m_features.push_back(f);
                         }
                     }
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e) {
                     log_error("Error saving group %s (e: %s). It will be excluded from the payload",
                         groupId.c_str(), e.what());
 
@@ -555,7 +582,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                 try {
                     rollbackSaveResponse +=
                         saveFeature(feature.m_feature_name, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
-                } catch (std::exception& ex) {
+                }
+                catch (std::exception& ex) {
                     allFeaturesRestored = false;
 
                     restoreStatus.m_status = statusToString(Status::FAILED);
@@ -573,7 +601,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                 if (g_srrFeatureMap.at(featureName).m_reset) {
                     try {
                         resetFeature(featureName);
-                    } catch (SrrResetFailed& ex) {
+                    }
+                    catch (SrrResetFailed& ex) {
                         log_warning(ex.what());
                     }
                 }
@@ -583,7 +612,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     RestoreResponse resp   = restoreFeature(featureName, query);
                     restoreStatus.m_status = statusToString(resp.status().status());
                     restoreStatus.m_error  = TRANSLATE_ME(resp.status().error().c_str());
-                } catch (SrrRestoreFailed& ex) {
+                }
+                catch (SrrRestoreFailed& ex) {
                     allFeaturesRestored = false;
 
                     restoreStatus.m_status = statusToString(Status::FAILED);
@@ -612,8 +642,6 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         }
         else if (IS_VERSION_2(srrRestoreReq.m_version))
         {
-            std::list<std::string> groupsIntegrityCheckFailed; // stores groups for which integrity check failed
-
             std::shared_ptr<SrrRestoreRequestDataV2> dataPtr =
                 std::dynamic_pointer_cast<SrrRestoreRequestDataV2>(srrRestoreReq.m_data_ptr);
             auto& groups = dataPtr->m_data;
@@ -626,7 +654,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     // unknown groups will be placed at the end and skipped
                     priorityL = g_srrGroupMap.at(l.m_group_id).m_restoreOrder;
                     priorityR = g_srrGroupMap.at(r.m_group_id).m_restoreOrder;
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e) {
                     return false;
                 }
                 return priorityL < priorityR;
@@ -640,6 +669,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
             }
 
             // data integrity check
+            std::list<std::string> groupsIntegrityCheckFailed; // groups where integrity check failed
             if (force) {
                 log_warning("Restoring with force option: data integrity check will be skipped");
             } else {
@@ -744,7 +774,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                         rollbackSaveResponse +=
                             saveFeature(feature.m_feature, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
                     }
-                } catch (std::exception& ex) {
+                }
+                catch (std::exception& ex) {
                     log_error("Could not backup feature %s", groupId.c_str());
                 }
 
@@ -782,7 +813,8 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
                         // update restart flag
                         restart = restart | g_srrFeatureMap.at(featureName).m_restart;
-                    } catch (const std::exception& ex) {
+                    }
+                    catch (const std::exception& ex) {
                         // restore failed -> rolling back the whole group
                         restoreFailed = true;
 
@@ -820,12 +852,14 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         {
             throw SrrInvalidVersion();
         }
-    } catch (const SrrIntegrityCheckFailed& e) {
+    }
+    catch (const SrrIntegrityCheckFailed& e) {
         srrRestoreResp.m_status = statusToString(Status::UNKNOWN);
         srrRestoreResp.m_error  = TRANSLATE_ME(e.what());
 
         log_error(srrRestoreResp.m_error.c_str());
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         srrRestoreResp.m_status = statusToString(Status::FAILED);
         srrRestoreResp.m_error  = TRANSLATE_ME(e.what());
 
@@ -840,8 +874,11 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     response.push_back(srrRestoreResp.m_status);
     response.push_back(jsonResp);
 
+    logInfo("SRR restore request status: {}", srrRestoreResp.m_status);
+
     if (restart) {
         if (m_parameters.at(SRR_ENABLE_REBOOT_KEY) == "true") {
+            logInfo("Reboot required");
             std::thread restartThread(restartBiosService, SRR_RESTART_DELAY_SEC);
             restartThread.detach();
         } else {
@@ -849,7 +886,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
         }
     }
 
-    logInfo("SRR restore request completed (status: {})", srrRestoreResp.m_status);
+    logInfo("SRR restore request done");
     return response;
 }
 
