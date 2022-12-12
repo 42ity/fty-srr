@@ -29,5 +29,7 @@
     "srr_group-ai-settings" : "AI settings",
     "srr_ai-settings" : "AI settings",
     "srr_group-remote-syslog" : "Remote logs settings",
-    "srr_rsyslog" : "Remote syslog settings"
+    "srr_rsyslog" : "Remote syslog settings",
+    "srr_group-timezone-settings" : "Timezone settings",
+    "srr_timezone" : "Timezone"
 }
