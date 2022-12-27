@@ -30,6 +30,7 @@
     "srr_ai-settings" : "AI settings",
     "srr_group-remote-syslog" : "Remote logs settings",
     "srr_rsyslog" : "Remote syslog settings",
-    "srr_group-timezone-settings" : "Timezone settings",
-    "srr_timezone" : "Timezone"
+    "srr_group-datetime-settings" : "Date&Time settings",
+    "srr_timezone" : "Time zone",
+    "srr_ntp" : "NTP server"
 }

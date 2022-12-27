@@ -264,6 +264,15 @@ static auto initSrrFeatures = []() {
     tmp[F_TIMEZONE_SETTINGS].m_restart     = false;
     tmp[F_TIMEZONE_SETTINGS].m_reset       = false;
 
+    tmp[F_NTP_SETTINGS];
+    tmp[F_NTP_SETTINGS].m_id          = F_NTP_SETTINGS;
+    tmp[F_NTP_SETTINGS].m_name        = F_NTP_SETTINGS;
+    tmp[F_NTP_SETTINGS].m_description = TRANSLATE_ME("srr_ntp");
+    tmp[F_NTP_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
+    tmp[F_NTP_SETTINGS].m_requiredIn  = {"2.3"};
+    tmp[F_NTP_SETTINGS].m_restart     = false;
+    tmp[F_NTP_SETTINGS].m_reset       = false;
+
     logDebug("initSrrFeatures (size: {})", tmp.size());
     return tmp;
 };
@@ -373,13 +382,14 @@ static auto initSrrGroups = []() {
 
     tmp[G_USER_SESSION_MANAGEMENT].m_fp.push_back(SrrFeaturePriorityStruct(F_USER_SESSION_MANAGEMENT_FEATURE_NAME, 1));
 
-    tmp[G_TIMEZONE_SETTINGS];
-    tmp[G_TIMEZONE_SETTINGS].m_id           = G_TIMEZONE_SETTINGS;
-    tmp[G_TIMEZONE_SETTINGS].m_name         = G_TIMEZONE_SETTINGS;
-    tmp[G_TIMEZONE_SETTINGS].m_description  = TRANSLATE_ME("srr_group-timezone-settings");
-    tmp[G_TIMEZONE_SETTINGS].m_restoreOrder = restoreOrder++;
+    tmp[G_DATETIME_SETTINGS];
+    tmp[G_DATETIME_SETTINGS].m_id           = G_DATETIME_SETTINGS;
+    tmp[G_DATETIME_SETTINGS].m_name         = G_DATETIME_SETTINGS;
+    tmp[G_DATETIME_SETTINGS].m_description  = TRANSLATE_ME("srr_group-datetime-settings");
+    tmp[G_DATETIME_SETTINGS].m_restoreOrder = restoreOrder++;
 
-    tmp[G_TIMEZONE_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_TIMEZONE_SETTINGS, 1));
+    tmp[G_DATETIME_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_TIMEZONE_SETTINGS, 1));
+    tmp[G_DATETIME_SETTINGS].m_fp.push_back(SrrFeaturePriorityStruct(F_NTP_SETTINGS, 2));
 
     logDebug("initSrrGroups (size: {})", tmp.size());
     return tmp;
