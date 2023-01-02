@@ -258,7 +258,7 @@ static auto initSrrFeatures = []() {
     tmp[F_TIMEZONE_SETTINGS];
     tmp[F_TIMEZONE_SETTINGS].m_id          = F_TIMEZONE_SETTINGS;
     tmp[F_TIMEZONE_SETTINGS].m_name        = F_TIMEZONE_SETTINGS;
-    tmp[F_TIMEZONE_SETTINGS].m_description = TRANSLATE_ME("srr_timezone");
+    tmp[F_TIMEZONE_SETTINGS].m_description = TRANSLATE_ME("srr_timezone_settings");
     tmp[F_TIMEZONE_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
     tmp[F_TIMEZONE_SETTINGS].m_requiredIn  = {"2.3"};
     tmp[F_TIMEZONE_SETTINGS].m_restart     = false;
@@ -267,7 +267,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NTP_SETTINGS];
     tmp[F_NTP_SETTINGS].m_id          = F_NTP_SETTINGS;
     tmp[F_NTP_SETTINGS].m_name        = F_NTP_SETTINGS;
-    tmp[F_NTP_SETTINGS].m_description = TRANSLATE_ME("srr_ntp");
+    tmp[F_NTP_SETTINGS].m_description = TRANSLATE_ME("srr_ntp_settings");
     tmp[F_NTP_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
     tmp[F_NTP_SETTINGS].m_requiredIn  = {"2.3"};
     tmp[F_NTP_SETTINGS].m_restart     = false;
