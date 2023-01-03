@@ -270,7 +270,7 @@ static auto initSrrFeatures = []() {
     tmp[F_NTP_SETTINGS].m_description = TRANSLATE_ME("srr_ntp_settings");
     tmp[F_NTP_SETTINGS].m_agent       = CONFIG_AGENT_NAME;
     tmp[F_NTP_SETTINGS].m_requiredIn  = {"2.3"};
-    tmp[F_NTP_SETTINGS].m_restart     = false;
+    tmp[F_NTP_SETTINGS].m_restart     = true;
     tmp[F_NTP_SETTINGS].m_reset       = false;
 
     logDebug("initSrrFeatures (size: {})", tmp.size());
