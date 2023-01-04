@@ -685,9 +685,10 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
             // if force option is not set, verify that all group data is valid
             if (!force && !groupsIntegrityCheckFailed.empty()) {
-                throw srr::SrrIntegrityCheckFailed("Data integrity check failed for groups:" +
-                                                   std::accumulate(groupsIntegrityCheckFailed.begin(),
-                                                       groupsIntegrityCheckFailed.end(), std::string(" ")));
+                std::string groupList, sep;
+                for (auto& it : groupsIntegrityCheckFailed)
+                    { groupList += sep + it; sep = ", "; }
+                throw srr::SrrIntegrityCheckFailed("Data integrity check failed for groups: " + groupList);
             }
 
             // start restore procedure
