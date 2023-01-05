@@ -29,5 +29,8 @@
     "srr_group-ai-settings" : "AI settings",
     "srr_ai-settings" : "AI settings",
     "srr_group-remote-syslog" : "Remote logs settings",
-    "srr_rsyslog" : "Remote syslog settings"
+    "srr_rsyslog" : "Remote syslog settings",
+    "srr_group-datetime-settings" : "Date and time settings",
+    "srr_timezone_settings" : "Time zone settings",
+    "srr_ntp_settings" : "NTP service settings"
 }

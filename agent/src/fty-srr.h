@@ -85,6 +85,7 @@ constexpr auto G_RSYSLOG                 = "group-remote-syslog";
 constexpr auto G_USER_SESSION_MANAGEMENT = "group-user-session-management";
 constexpr auto G_VIRTUALIZATION_SETTINGS = "group-virtualization-settings";
 constexpr auto G_AI_SETTINGS             = "group-ai-settings";
+constexpr auto G_DATETIME_SETTINGS       = "group-datetime-settings";
 
 // FEATURES
 constexpr auto F_ALERT_AGENT                          = "alert-agent";
@@ -108,3 +109,5 @@ constexpr auto F_USER_SESSION_MANAGEMENT_FEATURE_NAME = "user-session-management
 constexpr auto F_VIRTUAL_ASSETS                       = "virtual-assets";
 constexpr auto F_VIRTUALIZATION_SETTINGS              = "virtualization-settings";
 constexpr auto F_AI_SETTINGS                          = "ai-settings";
+constexpr auto F_TIMEZONE_SETTINGS                    = "timezone-settings";
+constexpr auto F_NTP_SETTINGS                         = "ntp-settings";
