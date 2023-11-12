@@ -88,6 +88,10 @@ messagebus::Message sendRequest(messagebus::MessageBus& msgbus, const dto::UserD
     logDebug("Send '{}' request to {}/{} (from: {}, timeout: {} sec.)",
         action, agentNameDest, queueNameDest, from, timeout_s);
 
+    if (action == "save" ) {
+        logDebug("=== userData '{}': {}", action, userData.front());
+    }
+
     messagebus::Message resp;
     try {
         messagebus::Message req;
