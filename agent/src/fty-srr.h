@@ -50,7 +50,7 @@ const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2", "2
 constexpr auto CONFIG_AGENT_NAME     = "fty-config";
 constexpr auto CONFIG_MSG_QUEUE_NAME = "ETN.Q.IPMCORE.CONFIG";
 // EMC4J agent definition
-constexpr auto EMC4J_AGENT_NAME     = "etn-malamute-translator";
+constexpr auto EMC4J_AGENT_NAME     = "etn-ipm2-amqp-bridge";
 constexpr auto EMC4J_MSG_QUEUE_NAME = "ETN.Q.EMC4J.REQ";
 // Security wallet agent definition
 constexpr auto SECU_WALLET_AGENT_NAME     = "security-wallet";
