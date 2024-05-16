@@ -18,7 +18,7 @@
 */
 
 #include "helpers/utilsReauth.h"
-#include <cxxtools/base64codec.h>
+#include <fty_common_base64.h>
 
 namespace srr::utils {
 
@@ -32,7 +32,7 @@ bool isPasswordValidated(const std::string& passwd)
 
 std::string buildReauthToken(const std::string& sessionToken, const std::string& passwd)
 {
-    return cxxtools::Base64Codec::encode(sessionToken + ":" + passwd);
+    return Base64::encode(sessionToken + ":" + passwd);
 }
 
 } // namespace srr::utils
