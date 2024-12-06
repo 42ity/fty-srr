@@ -359,6 +359,7 @@ dto::UserData SrrWorker::getGroupList()
 dto::UserData SrrWorker::requestSave(const std::string& json)
 {
     logInfo("SRR save request");
+    //logDebug("json: {}", json);
 
     SrrSaveResponse srrSaveResp;
     srrSaveResp.m_version = m_srrVersion;
@@ -367,10 +368,11 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
     bool allGroupsSaved = true;
 
     try {
-        cxxtools::SerializationInfo requestSi = dto::srr::deserializeJson(json);
-        SrrSaveRequest              srrSaveReq;
-
-        requestSi >>= srrSaveReq;
+        SrrSaveRequest srrSaveReq;
+        {
+            cxxtools::SerializationInfo si = dto::srr::deserializeJson(json);
+            si >>= srrSaveReq;
+        }
 
         // check that passphrase is compliant with requested format
         if (srr::checkPassphraseFormat(srrSaveReq.m_passphrase)) {
@@ -383,15 +385,15 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
 
             // save all the features for each required group
             for (const auto& groupId : srrSaveReq.m_group_list) {
-                log_debug("Saving features from group %s ", groupId.c_str());
+                log_debug("Saving features of group '%s'", groupId.c_str());
 
                 srr::SrrGroupStruct group;
                 try {
                     group = g_srrGroupMap.at(groupId);
                 }
-                catch (std::out_of_range& /* ex */) {
+                catch (const std::out_of_range& /* ex */) {
                     allGroupsSaved = false;
-                    log_error("Group %s not found", groupId.c_str());
+                    log_error("Group '%s' not found", groupId.c_str());
                     // do not save features from the current group, as it would be incomplete
                     continue;
                 }
@@ -399,10 +401,11 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                 try {
                     for (const auto& entry : group.m_fp) {
                         const auto& featureName = entry.m_feature;
-                        log_debug("Saving feature %s of group %s ", featureName.c_str(), groupId.c_str());
+                        log_debug("Saving feature '%s' of group '%s'", featureName.c_str(), groupId.c_str());
 
                         SaveResponse saveResp =
                             saveFeature(featureName, srrSaveReq.m_passphrase, srrSaveReq.m_sessionToken);
+
                         // convert ProtoBuf save response to UI DTO
                         const auto& mapFeaturesData = saveResp.map_features_data();
 
@@ -417,7 +420,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
                     }
                 }
                 catch (const std::exception& e) {
-                    log_error("Error saving group %s (e: %s). It will be excluded from the payload",
+                    log_error("Error saving group '%s' (e: %s). It will be excluded from the payload",
                         groupId.c_str(), e.what());
 
                     // delete the current group, as it would be incomplete
@@ -449,11 +452,11 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
         } else {
             srrSaveResp.m_error =
                 TRANSLATE_ME("Passphrase must have %s characters", (fty::getPassphraseFormat()).c_str());
-            log_error(srrSaveResp.m_error.c_str());
+            log_error("%s", srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
         srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
-        log_error(srrSaveResp.m_error.c_str());
+        log_error("%s", srrSaveResp.m_error.c_str());
     }
 
     cxxtools::SerializationInfo responseSi;
@@ -583,7 +586,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     rollbackSaveResponse +=
                         saveFeature(feature.m_feature_name, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
                 }
-                catch (std::exception& ex) {
+                catch (const std::exception& ex) {
                     allFeaturesRestored = false;
 
                     restoreStatus.m_status = statusToString(Status::FAILED);
@@ -613,7 +616,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     restoreStatus.m_status = statusToString(resp.status().status());
                     restoreStatus.m_error  = TRANSLATE_ME(resp.status().error().c_str());
                 }
-                catch (SrrRestoreFailed& ex) {
+                catch (const SrrRestoreFailed& ex) {
                     allFeaturesRestored = false;
 
                     restoreStatus.m_status = statusToString(Status::FAILED);
@@ -749,7 +752,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                         }
                     }
                 }
-                catch (std::out_of_range& ex) {
+                catch (const std::out_of_range& ex) {
                     // if one feature is missing, set the error for the whole group and skip the group
                     RestoreStatus restoreStatus;
                     restoreStatus.m_name   = groupId;
@@ -776,7 +779,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                             saveFeature(feature.m_feature, srrRestoreReq.m_passphrase, srrRestoreReq.m_sessionToken);
                     }
                 }
-                catch (std::exception& ex) {
+                catch (const std::exception& ex) {
                     log_error("Could not backup feature %s", groupId.c_str());
                 }
 
@@ -869,9 +872,9 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
 
     cxxtools::SerializationInfo responseSi;
     responseSi <<= srrRestoreResp;
+    std::string jsonResp = serializeJson(responseSi);
 
     dto::UserData response;
-    std::string   jsonResp = serializeJson(responseSi);
     response.push_back(srrRestoreResp.m_status);
     response.push_back(jsonResp);
 

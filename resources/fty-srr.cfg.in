@@ -12,5 +12,5 @@ srr-msg-bus
     srrQueueName = ETN.Q.IPMCORE.SRR        # queue name for all incoming request.
 
 srr
-    version = 2.3        # current version
+    version = 2.4        # current version
     enableReboot = true  # Enable/disable reboot after restore
