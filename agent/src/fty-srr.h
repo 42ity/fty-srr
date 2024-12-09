@@ -37,13 +37,13 @@ constexpr auto REQUEST_TIMEOUT_DEFAULT   = "600000"; //ms
 constexpr auto AGENT_NAME                = "fty-srr";
 constexpr auto DEFAULT_ENDPOINT          = "ipc://@/malamute";
 constexpr auto SRR_MSG_QUEUE_NAME        = "ETN.Q.IPMCORE.SRR";
-constexpr auto SRR_ACTIVE_VERSION        = "2.3";
+constexpr auto SRR_ACTIVE_VERSION        = "2.4";
 constexpr auto SRR_ENABLE_REBOOT_DEFAULT = "true";
 constexpr auto SRR_PREFIX_TRANSLATE_KEY  = "srr_";
 
 //set of all released versions
 //see SRR_ACTIVE_VERSION IS_VERSION_1 IS_VERSION_2
-const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2", "2.3"})};
+const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2", "2.3", "2.4"})};
 
 // AGENTS AND QUEUES
 // Config agent definition
@@ -111,3 +111,4 @@ constexpr auto F_VIRTUALIZATION_SETTINGS              = "virtualization-settings
 constexpr auto F_AI_SETTINGS                          = "ai-settings";
 constexpr auto F_TIMEZONE_SETTINGS                    = "timezone-settings";
 constexpr auto F_NTP_SETTINGS                         = "ntp-settings";
+constexpr auto F_GRAPHITE_SETTINGS                    = "graphite-settings";
