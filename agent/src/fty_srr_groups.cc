@@ -306,7 +306,7 @@ static auto initSrrGroups = []() {
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATION_SETTINGS, 7));
     tmp[G_ASSETS].m_fp.push_back(SrrFeaturePriorityStruct(F_AUTOMATIONS, 8));
 
-    // discovery group, create &nd add features
+    // discovery group, create and add features
     tmp[G_DISCOVERY];
     tmp[G_DISCOVERY].m_id           = G_DISCOVERY;
     tmp[G_DISCOVERY].m_name         = G_DISCOVERY;

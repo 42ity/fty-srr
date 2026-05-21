@@ -528,6 +528,7 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
     logInfo("SRR restore request");
 
     const bool IMPVAL_3680_HOTFIX{true}; // 2.4.0, see also IPMVAL-3668
+    const bool IMPROG_10303_HOTFIX{true}; // 3.0.0
     bool restart = false;
 
     SrrRestoreResponse srrRestoreResp;
@@ -577,6 +578,17 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     // WA missing m_description, m_name is used as a translation key
                     if (restoreStatus.m_name.find(SRR_PREFIX_TRANSLATE_KEY) != 0)
                         restoreStatus.m_name.insert(0, SRR_PREFIX_TRANSLATE_KEY);
+                }
+
+                if (IMPROG_10303_HOTFIX) {
+                    // WA bad m_name used as a translation key
+                    // see G_DISCOVERY definition (initSrrGroups) in fty_srr_groups.cc &
+                    // see "srr_group-discovery" key in locale_en_US.json
+                    auto pos = restoreStatus.m_name.find(G_DISCOVERY);
+                    if (pos != std::string::npos) {
+                        // rm ending "-ng"
+                        restoreStatus.m_name = restoreStatus.m_name.substr(0, pos + strlen(G_DISCOVERY) - 3);
+                    }
                 }
 
                 // save feature to perform a rollback in case of error
@@ -805,6 +817,17 @@ dto::UserData SrrWorker::requestRestore(const std::string& json, bool force)
                     // WA missing m_description, m_name is used as a translation key
                     if (restoreStatus.m_name.find(SRR_PREFIX_TRANSLATE_KEY) != 0)
                         restoreStatus.m_name.insert(0, SRR_PREFIX_TRANSLATE_KEY);
+                }
+
+                if (IMPROG_10303_HOTFIX) {
+                    // WA bad m_name used as a translation key
+                    // see G_DISCOVERY definition (initSrrGroups) in fty_srr_groups.cc &
+                    // see "srr_group-discovery" key in locale_en_US.json
+                    auto pos = restoreStatus.m_name.find(G_DISCOVERY);
+                    if (pos != std::string::npos) {
+                        // rm ending "-ng"
+                        restoreStatus.m_name = restoreStatus.m_name.substr(0, pos + strlen(G_DISCOVERY) - 3);
+                    }
                 }
 
                 // restore features in order
