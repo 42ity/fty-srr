@@ -6,6 +6,7 @@
     "srr_automatic-groups" : "Automatic groups",
     "srr_virtual-assets" : "Virtual assets",
     "srr_alert-agent" : "Alert settings",
+    "srr_alert-agent-settings" : "Alert agent settings",
     "srr_automation-settings" : "Automation settings",
     "srr_automations" : "Automations",
     "srr_group-discovery" : "Auto discovery settings",
