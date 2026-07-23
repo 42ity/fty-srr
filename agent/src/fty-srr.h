@@ -37,13 +37,15 @@ constexpr auto REQUEST_TIMEOUT_DEFAULT   = "600000"; //ms
 constexpr auto AGENT_NAME                = "fty-srr";
 constexpr auto DEFAULT_ENDPOINT          = "ipc://@/malamute";
 constexpr auto SRR_MSG_QUEUE_NAME        = "ETN.Q.IPMCORE.SRR";
-constexpr auto SRR_ACTIVE_VERSION        = "2.4";
 constexpr auto SRR_ENABLE_REBOOT_DEFAULT = "true";
 constexpr auto SRR_PREFIX_TRANSLATE_KEY  = "srr_";
 
+//see version duplicate in resources/fty-srr.cfg.in (*must* update)
+constexpr auto SRR_ACTIVE_VERSION = "2.5";
+
 //set of all released versions
 //see SRR_ACTIVE_VERSION IS_VERSION_1 IS_VERSION_2
-const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2", "2.3", "2.4"})};
+const auto SRR_VERSION_ALL{std::set<std::string>({"1.0", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5"})};
 
 // AGENTS AND QUEUES
 // Config agent definition
@@ -89,6 +91,7 @@ constexpr auto G_DATETIME_SETTINGS       = "group-datetime-settings";
 
 // FEATURES
 constexpr auto F_ALERT_AGENT                          = "alert-agent";
+constexpr auto F_ALERT_AGENT_SETTINGS                 = "alert-agent-settings";
 constexpr auto F_ASSET_AGENT                          = "asset-agent";
 constexpr auto F_AUTOMATIC_GROUPS                     = "automatic-groups";
 constexpr auto F_AUTOMATION_SETTINGS                  = "automation-settings";
