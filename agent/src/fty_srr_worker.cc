@@ -455,7 +455,7 @@ dto::UserData SrrWorker::requestSave(const std::string& json)
             log_error("%s", srrSaveResp.m_error.c_str());
         }
     } catch (const std::exception& e) {
-        srrSaveResp.m_error = TRANSLATE_ME("Exception on save Ipm2 configuration: (%s)", e.what());
+        srrSaveResp.m_error = TRANSLATE_ME("Exception on save configuration: (%s)", e.what());
         log_error("%s", srrSaveResp.m_error.c_str());
     }
 
